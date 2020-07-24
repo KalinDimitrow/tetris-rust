@@ -1,0 +1,23 @@
+[package]
+name = "tetris"
+version = "0.1.0"
+authors = ["kalindimitrovv <kalindimitrovv@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "libtetrisgame"
+path = "src/lib.rs"
+
+[[bin]]
+name = "tetris"
+path = "src/main.rs"
+
+[dependencies]
+piston_window = "0.109.0"
+find_folder = "0.3.0"
+gfx_device_gl = "*"
+rand = "*"
+rand_derive = "*"
+
