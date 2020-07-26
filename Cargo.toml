@@ -18,6 +18,5 @@ path = "src/main.rs"
 piston_window = "0.109.0"
 find_folder = "0.3.0"
 gfx_device_gl = "*"
-rand = "*"
-rand_derive = "*"
+rand = "0.7.3"
 

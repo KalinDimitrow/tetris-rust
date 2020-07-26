@@ -2,6 +2,7 @@ use crate::game_data::*;
 use crate::state_machine::*;
 use crate::GameResources;
 use crate::game_logic::GameLogic;
+use crate::figure::FigureData;
 use std::cell::RefCell;
 use piston_window::*;
 use math::Matrix2d;
@@ -15,7 +16,7 @@ pub struct PlayState {
 fn drawPlayField(_c : &Context,  _g : &mut G2d, _arguments : &RenderArgs, _device : &mut gfx_device_gl::Device, _resources : &mut GameResources, _data : &GameData) {
     let empty_block = &_resources.empty_block;
     let full_block = &_resources.cube_block;
-    let blocks = _data.play_table;
+    let blocks = &_data.play_table;
     let mut position_index : usize = 0;
     blocks.iter().for_each(|block : &PlayBlock| {
         let x = (position_index % GAME_FIELD_WIDTH);
@@ -58,39 +59,30 @@ fn drawScore(_c : &Context,  _g : &mut G2d, _arguments : &RenderArgs, _device : 
 
 fn drawPreview(_c : &Context,  _g : &mut G2d, _arguments : &RenderArgs, _device : &mut gfx_device_gl::Device, _resources : &mut GameResources, _data : &GameData) {
     let full_block = &_resources.cube_block;
-    let figure = _data.next_figure;
+    let figure = _data.previewFigure();
 
-    let I_ELEMENT : FigureData = FigureData::new((-2.0*size, -size/2.0),vec![(0, 0), (1, 0), (2, 0), (3, 0), (4, 0)]);
-    let O_ELEMENT : FigureData = FigureData::new((-size, -size),vec![(0, 0), (1, 0), (0, 1),(1, 1)]);
-    let T_ELEMENT : FigureData = FigureData::new((-1.5*size, -size),vec![(0, 0), (1, 0), (2, 0),(1, 1)]);
-    let S_ELEMENT : FigureData = FigureData::new((-size, -1.5*size),vec![(0, 0), (1, 0), (0, 1),(-1, 1)]);
-    let Z_ELEMENT : FigureData = FigureData::new((-size, -1.5*size),vec![(0, 0), (1, 0), (1, 1),(2, 1)]);
-    let J_ELEMENT : FigureData = FigureData::new((1.0, 1.0),vec![(0, 0), (0, 1), (1, 1),(2, 1)]);
-    let L_ELEMENT : FigureData = FigureData::new((1.0, 1.0),vec![(0, 0), (0, 1), (-1, 1),(-2, 1)]);
-
-    let sequence = match figure {
-        PlayBlock::I => {&I_ELEMENT}
-        PlayBlock::O => {&O_ELEMENT}
-        PlayBlock::T => {&T_ELEMENT}
-        PlayBlock::S => {&S_ELEMENT}
-        PlayBlock::Z => {&Z_ELEMENT}
-        PlayBlock::J => {&J_ELEMENT}
-        PlayBlock::L => {&L_ELEMENT}
-        _ => {&panic!()}
-    };
-
-    // let offset = sequence.0;
-    let offset = &sequence.position;
-    sequence.get_sequence().iter().for_each(|position : &(i32, i32)| {
+    let offset = &figure.offset;
+    let figure = &figure.figure;
+    let sequence = &figure.sequence;
+    sequence.iter().for_each(|position : &(i32, i32)| {
         let x = PREVIEW_DEFAULT_POSITION_X + (position.0 * BLOCK_SIZE as i32) as f64 + offset.0;
         let y = PREVIEW_DEFAULT_POSITION_Y + (position.1 * BLOCK_SIZE as i32) as f64 + offset.1;
         image(full_block, _c.transform.trans(x as f64, y as f64), _g);
     });
 }
 
-// fn sequenceFromFigure() -> ((f64, f64),[(i32,i32);4]) {
-//
-// }
+fn drawCurrent(_c : &Context,  _g : &mut G2d, _arguments : &RenderArgs, _device : &mut gfx_device_gl::Device, _resources : &mut GameResources, _data : &GameData) {
+    let full_block = &_resources.cube_block;
+    let figure = &_data.current_figure;
+
+    let offset = &figure.position;
+    let sequence = &figure.sequence;
+    sequence.iter().for_each(|position : &(i32, i32)| {
+        let x = (position.0 * BLOCK_SIZE as i32) as f64 + offset.0;
+        let y = (position.1 * BLOCK_SIZE as i32) as f64 + offset.1;
+        image(full_block, _c.transform.trans(x as f64, y as f64), _g);
+    });
+}
 
 impl PlayState {
     pub fn new() -> Result<Rc<RefCell<dyn State>>,Box<dyn error::Error>> {
@@ -113,6 +105,7 @@ impl State for PlayState {
         image(background, _c.transform, _g);
         drawPlayField(&_c, _g, _arguments, _device, _resources, _data);
         drawScore(&_c, _g, _arguments, _device, _resources, _data);
-        drawPreview(&_c, _g, _arguments, _device, _resources, _data)
+        drawPreview(&_c, _g, _arguments, _device, _resources, _data);
+        drawCurrent(&_c, _g, _arguments, _device, _resources, _data);
     }
 }
