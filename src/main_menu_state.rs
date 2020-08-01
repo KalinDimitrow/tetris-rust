@@ -1,31 +1,45 @@
 use crate::game_data::*;
 use crate::state_machine::*;
 use crate::GameResources;
-use crate::game_logic::GameLogic;
 use piston_window::*;
-use std::cell::RefCell;
-use std::rc::Rc;
 use std::error;
+use crate::paly_state::PlayState;
+
+const ELEMENTS_COUNT : i32 = 2;
 
 pub struct MainMenu {
-    selection : i32
+    selection : i32,
+    interact : bool
 }
 
 impl MainMenu {
-    pub fn new() -> Result<Rc<RefCell<dyn State>>,Box<dyn error::Error>> {
-        Ok(Rc::new(RefCell::new(MainMenu{selection : 0})))
+    pub fn new() -> Result<Box<dyn State>,Box<dyn error::Error>> {
+        Ok(Box::new(MainMenu{selection : 0, interact : false}))
     }
 }
 
-
-
 impl State for MainMenu {
-    fn update(&mut self,  _data : &mut GameData, _update_args : &UpdateArgs, event : Event) -> &'static str {
-        MAIN_MENU
+    fn update(&mut self,  _data : &mut GameData, _update_args : &UpdateArgs, event : Event) -> StateTransition {
+        if self.interact {
+            self.interact = false;
+            match self.selection {
+                0 => {
+                    return StateTransition::Transition(PlayState::new().unwrap());
+                }
+
+                1 => {
+                    return StateTransition::Pop;
+                }
+
+                _ => {
+                    panic!();
+                }
+            }
+        }
+        StateTransition::Hold
     }
 
-    fn handleInput(&mut self, input : Input, time : Option<TimeStamp>, _data : &mut GameData) -> &'static str {
-        let max : i32 = 2;
+    fn handleInput(&mut self, input : Input, time : Option<TimeStamp>, _data : &mut GameData) {
         match input {
             Input::Button(buttons) => {
                 if buttons.state == ButtonState::Press {
@@ -33,25 +47,13 @@ impl State for MainMenu {
                         Button::Keyboard(key) => {
                             match key {
                                 Key::Up => {
-                                    self.selection = (self.selection + (max - 1)) % max;
+                                    self.selection = (self.selection + (ELEMENTS_COUNT - 1)) % ELEMENTS_COUNT;
                                 }
                                 Key::Down => {
-                                    self.selection = (self.selection + 1) % max;
+                                    self.selection = (self.selection + 1) % ELEMENTS_COUNT;
                                 }
                                 Key::Return => {
-                                    match self.selection {
-                                        0 => {
-                                            return PLAY_STATE;
-                                        }
-
-                                        1 => {
-                                            _data.running = false;
-                                        }
-
-                                        _=> {
-                                            panic!();
-                                        }
-                                    }
+                                    self.interact = true;
                                 }
                                 _ => {}
                             }
@@ -62,7 +64,6 @@ impl State for MainMenu {
             }
             _=>{}
         }
-        MAIN_MENU
     }
 
     fn render(&mut self, _c : Context, _g : &mut G2d, _arguments : &RenderArgs, _device : &mut gfx_device_gl::Device, _resources : &mut GameResources, _data : &GameData) {

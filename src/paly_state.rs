@@ -1,12 +1,7 @@
 use crate::game_data::*;
 use crate::state_machine::*;
 use crate::GameResources;
-use crate::game_logic::GameLogic;
-use crate::figure::FigureData;
-use std::cell::RefCell;
 use piston_window::*;
-use math::Matrix2d;
-use std::rc::Rc;
 use std::error;
 
 pub struct PlayState {
@@ -19,7 +14,7 @@ fn drawPlayField(_c : &Context,  _g : &mut G2d, _arguments : &RenderArgs, _devic
     let blocks = &_data.play_table;
     let mut position_index : usize = 0;
     blocks.iter().for_each(|block : &PlayBlock| {
-        let x = (position_index % GAME_FIELD_WIDTH);
+        let x = position_index % GAME_FIELD_WIDTH;
         let y = (position_index / GAME_FIELD_WIDTH)*BLOCK_SIZE;
         position_index += BLOCK_SIZE;
         match block {
@@ -85,18 +80,18 @@ fn drawCurrent(_c : &Context,  _g : &mut G2d, _arguments : &RenderArgs, _device 
 }
 
 impl PlayState {
-    pub fn new() -> Result<Rc<RefCell<dyn State>>,Box<dyn error::Error>> {
-        Ok(Rc::new(RefCell::new(PlayState{})))
+    pub fn new() -> Result<Box<dyn State>,Box<dyn error::Error>> {
+        Ok(Box::new(PlayState{}))
     }
 }
 
 impl State for PlayState {
-    fn update(&mut self,  data : &mut GameData, update_args : &UpdateArgs, event : Event) -> &'static str {
-        PLAY_STATE
+    fn update(&mut self,  data : &mut GameData, update_args : &UpdateArgs, event : Event) -> StateTransition {
+        StateTransition::Hold
     }
 
-    fn handleInput(&mut self, input : Input, time : Option<TimeStamp>, _data : &mut GameData) -> &'static str {
-        PLAY_STATE
+    fn handleInput(&mut self, input : Input, time : Option<TimeStamp>, _data : &mut GameData) {
+
     }
 
     fn render(&mut self, _c : Context,  _g : &mut G2d, _arguments : &RenderArgs, _device : &mut gfx_device_gl::Device, _resources : &mut GameResources, _data : &GameData){

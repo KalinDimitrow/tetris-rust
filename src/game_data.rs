@@ -1,10 +1,6 @@
-use crate::game_logic::GameLogic;
 use crate::figure::{FigureData, PreviewFigureData};
 use rand::prelude::*;
-use rand::distributions::Uniform;
 use std::vec::Vec;
-use std::cell::RefCell;
-use std::rc::Rc;
 use std::error;
 
 pub const WIDTH : usize = 10;
@@ -33,7 +29,7 @@ pub struct GameData {
 
 impl GameData {
     pub fn new() -> Result<GameData, Box<dyn error::Error>> {
-        let _game_logic = GameLogic::new()?;
+        // let _game_logic = GameLogic::new()?;
         let play_table = [PlayBlock::E ; WIDTH*HEIGHT];
         let figures = PreviewFigureData::initializeFigures();
         let next_figure = GameData::generateNextFigure(&figures);

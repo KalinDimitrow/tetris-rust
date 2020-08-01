@@ -1,17 +1,15 @@
 use crate::game_resources::*;
+use crate::state_machine::*;
 use crate::game_data::*;
-use crate::game_logic::*;
 use piston_window::*;
-use std::cell::RefCell;
-use std::rc::Rc;
 use std::error;
+use crate::main_menu_state::MainMenu;
 
 pub struct Tetris {
     window : PistonWindow,
     pub game_resources : GameResources,
-    // pub game_data : Rc<RefCell<GameData>>,
     pub game_data : GameData,
-    pub game_logic : Rc<RefCell<GameLogic>>,
+    pub game_logic : StateMachine,
 }
 
 const GAME_NAME : &str = "Tetris";
@@ -27,15 +25,15 @@ impl Tetris {
             .graphics_api(opengl)
             .build()?;
 
-        let _game_resources = GameResources::new(resorce_path, &mut window)?;
-        let _game_data = GameData::new()?;
-        let _game_logic = GameLogic::new()?;
+        let game_resources = GameResources::new(resorce_path, &mut window)?;
+        let game_data = GameData::new()?;
+        let game_logic = StateMachine::new(MainMenu::new()?)?;
 
         Ok(Tetris{
-            window : window,
-            game_resources : _game_resources,
-            game_data : _game_data,
-            game_logic : _game_logic
+            window,
+            game_resources,
+            game_data,
+            game_logic
         })
     }
 
@@ -79,24 +77,20 @@ impl Tetris {
     }
 
     fn update(&mut self, update : UpdateArgs, event : Event) {
-        let next = self.game_logic.borrow_mut().current_state.borrow_mut()
-            .update(&mut self.game_data, &update, event);
-        self.game_logic.borrow_mut().transition(next);
+        self.game_logic.update(&mut self.game_data, &update, event);
     }
 
     fn render(&mut self, _arguments: RenderArgs, event : Event) {
         let resources = &mut self.game_resources;
-        let current_state = self.game_logic.borrow().current_state.clone();
         let game_data = &mut self.game_data;
-        self.window.draw_2d(&event, |c, g, _device| {
+        let game_logic = &mut self.game_logic;
+        self.window.draw_2d(&event, |c, g, device| {
             clear([1.0; 4], g);
-            current_state.borrow_mut().render( c, g, &_arguments, _device, resources, game_data);
+            game_logic.render( c, g, &_arguments, device, resources, game_data)
         });
     }
 
     fn inputHandler(&mut self, input : Input, time : Option<TimeStamp>) {
-        let next = self.game_logic.borrow_mut().current_state.borrow_mut()
-            .handleInput(input, time, &mut self.game_data);
-        self.game_logic.borrow_mut().transition(next);
+        self.game_logic.handleInput(input, time, &mut self.game_data);
     }
 }
