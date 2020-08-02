@@ -2,12 +2,12 @@ use std::vec::Vec;
 
 #[derive(Clone)]
 pub struct FigureData {
-    pub position : (f64, f64),
+    pub position : (i32, i32),
     pub sequence : Vec<(i32, i32)>
 }
 
 impl FigureData {
-    pub fn new(position : (f64, f64), sequence : Vec<(i32, i32)>) -> FigureData {
+    pub fn new(position : (i32, i32), sequence : Vec<(i32, i32)>) -> FigureData {
         FigureData{position, sequence}
     }
 
@@ -27,35 +27,35 @@ impl PreviewFigureData {
         let mut result : Vec<PreviewFigureData> = Vec::with_capacity(7);
         // I
         result.push(PreviewFigureData{figure :FigureData::new(
-            (0.0, 0.0),
+            (5, 0),
             vec![(0, 0), (1, 0), (2, 0), (3, 0), (4, 0)]),
             offset : (0.0, 0.0)}
         );
 
         //O
         result.push(PreviewFigureData{figure :FigureData::new(
-            (0.0, 0.0),
+            (5, 0),
             vec![(0, 0), (1, 0), (0, 1),(1, 1)]),
             offset : (0.0, 0.0)}
         );
 
         //T
         result.push(PreviewFigureData{figure :FigureData::new(
-            (0.0, 0.0),
+            (5, 0),
             vec![(0, 0), (1, 0), (2, 0),(1, 1)]),
             offset : (0.0, 0.0)}
         );
 
         //S
         result.push(PreviewFigureData{figure :FigureData::new(
-            (0.0, 0.0),
+            (5, 0),
             vec![(0, 0), (1, 0), (0, 1),(-1, 1)]),
             offset : (0.0, 0.0)}
         );
 
         //Z
         result.push(PreviewFigureData{figure :FigureData::new(
-            (0.0, 0.0),
+            (5, 0),
             vec![(0, 0), (1, 0), (1, 1),(2, 1)]),
             offset : (0.0, 0.0)}
         );
@@ -63,14 +63,14 @@ impl PreviewFigureData {
 
         //J
         result.push(PreviewFigureData{figure :FigureData::new(
-            (0.0, 0.0),
+            (5, 0),
             vec![(0, 0), (0, 1), (1, 1),(2, 1)]),
             offset : (0.0, 0.0)}
         );
 
         //L
         result.push(PreviewFigureData{figure :FigureData::new(
-            (0.0, 0.0),
+            (5, 0),
             vec![(0, 0), (0, 1), (-1, 1),(-2, 1)]),
             offset : (0.0, 0.0)}
         );

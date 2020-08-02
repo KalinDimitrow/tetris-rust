@@ -45,6 +45,10 @@ impl GameData {
         })
     }
 
+    pub fn nextFigure(&mut self) {
+        self.next_figure = GameData::generateNextFigure(&self.figures);
+    }
+
     pub fn generateNextFigure(figures : &Vec<PreviewFigureData> ) -> *const PreviewFigureData {
         figures.choose(&mut rand::thread_rng()).unwrap() as *const PreviewFigureData
     }
@@ -53,7 +57,7 @@ impl GameData {
         GameData::unsafeConvert(self.next_figure)
     }
 
-    fn unsafeConvert<'a>(pointer : *const PreviewFigureData) -> &'a PreviewFigureData {
+    pub fn unsafeConvert<'a>(pointer : *const PreviewFigureData) -> &'a PreviewFigureData {
         let figure = unsafe {&(*(pointer))};
         figure
     }

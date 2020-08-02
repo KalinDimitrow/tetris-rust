@@ -1,3 +1,4 @@
+mod figure_fall_state;
 mod figure;
 mod paly_state;
 mod main_menu_state;
