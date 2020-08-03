@@ -10,10 +10,34 @@ pub struct PlayState {
     logic : StateMachine
 }
 
+pub enum Rotation {
+    Left = -1,
+    Right = 1
+}
+
+pub fn rotate(figure : &mut FigureData, direction : Rotation) {
+    if let Some(index) = figure.rotation_center_index {
+        let rotation_center  = figure.sequence[index];
+        let rotation_quotient = direction as i32;
+        for element in &mut figure.sequence {
+            // let diff = (rotation_center.1 - element.1, rotation_center.0 - element.0);
+            // *element = (rotation_center.0 + diff.0, rotation_center.0 + diff.0);
+            // let new = (- rotation_quotient*rotation_center.1,  rotation_quotient*rotation_center.0);
+            let new = (- rotation_quotient*element.1,  rotation_quotient*element.0);
+            *element = new;
+        }
+    }
+}
+
 pub fn checkForCollision(position : &(i32, i32), sequence : &Vec<(i32, i32)>, game_field : &GameData) -> bool {
     for element in sequence {
         let new_position = (position.0 + element.0, position.1 + element.1);
-        if new_position.0 < 0 && new_position.0 >= WIDTH as i32 {
+        let index = new_position.0  + (WIDTH as i32)*new_position.1;
+        if new_position.1 < 0 {
+            continue;
+        }
+
+        if new_position.0 < 0 || new_position.0 >= WIDTH as i32 {
             return true;
         }
 
@@ -21,8 +45,7 @@ pub fn checkForCollision(position : &(i32, i32), sequence : &Vec<(i32, i32)>, ga
             return true;
         }
 
-        let index = new_position.0 as usize + WIDTH*(new_position.1 as usize);
-        match game_field.play_table[index] {
+        match game_field.play_table[index as usize] {
             PlayBlock::E => {}
 
             _=> {
