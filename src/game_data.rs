@@ -1,10 +1,10 @@
 use crate::figure::{FigureData, PreviewFigureData};
 use rand::prelude::*;
-use std::vec::Vec;
 use std::error;
+use std::vec::Vec;
 
-pub const WIDTH : usize = 10;
-pub const HEIGHT : usize = 20;
+pub const WIDTH: usize = 10;
+pub const HEIGHT: usize = 20;
 
 #[derive(Copy, Clone)]
 pub enum PlayBlock {
@@ -19,46 +19,46 @@ pub enum PlayBlock {
 }
 
 pub struct GameData {
-    pub running : bool,
-    pub score : u32,
-    pub next_figure : *const PreviewFigureData,
-    pub current_figure : FigureData,
-    pub figures : Vec<PreviewFigureData>,
-    pub play_table : [PlayBlock ; WIDTH*HEIGHT]
+    pub running: bool,
+    pub score: u32,
+    pub next_figure: *const PreviewFigureData,
+    pub current_figure: FigureData,
+    pub figures: Vec<PreviewFigureData>,
+    pub play_table: [PlayBlock; WIDTH * HEIGHT],
 }
 
 impl GameData {
     pub fn new() -> Result<GameData, Box<dyn error::Error>> {
         // let _game_logic = GameLogic::new()?;
-        let play_table = [PlayBlock::E ; WIDTH*HEIGHT];
-        let figures = PreviewFigureData::initializeFigures();
-        let next_figure = GameData::generateNextFigure(&figures);
-        let current_figure: FigureData = GameData::unsafeConvert(next_figure).figure.clone();
-        let next_figure = GameData::generateNextFigure(&figures);
+        let play_table = [PlayBlock::E; WIDTH * HEIGHT];
+        let figures = PreviewFigureData::initialize_figures();
+        let next_figure = GameData::generate_next_figure(&figures);
+        let current_figure: FigureData = GameData::unsafe_convert(next_figure).figure.clone();
+        let next_figure = GameData::generate_next_figure(&figures);
         Ok(GameData {
-            running : true,
-            score : 0,
+            running: true,
+            score: 0,
             next_figure,
             current_figure,
             figures,
-            play_table
+            play_table,
         })
     }
 
-    pub fn nextFigure(&mut self) {
-        self.next_figure = GameData::generateNextFigure(&self.figures);
+    pub fn next_figure(&mut self) {
+        self.next_figure = GameData::generate_next_figure(&self.figures);
     }
 
-    pub fn generateNextFigure(figures : &Vec<PreviewFigureData> ) -> *const PreviewFigureData {
+    pub fn generate_next_figure(figures: &Vec<PreviewFigureData>) -> *const PreviewFigureData {
         figures.choose(&mut rand::thread_rng()).unwrap() as *const PreviewFigureData
     }
 
-    pub fn previewFigure(&self) -> &PreviewFigureData {
-        GameData::unsafeConvert(self.next_figure)
+    pub fn preview_figure(&self) -> &PreviewFigureData {
+        GameData::unsafe_convert(self.next_figure)
     }
 
-    pub fn unsafeConvert<'a>(pointer : *const PreviewFigureData) -> &'a PreviewFigureData {
-        let figure = unsafe {&(*(pointer))};
+    pub fn unsafe_convert<'a>(pointer: *const PreviewFigureData) -> &'a PreviewFigureData {
+        let figure = unsafe { &(*(pointer)) };
         figure
     }
 }
