@@ -1,7 +1,7 @@
-use crate::figure::FigureData;
 use crate::figure_fall_state::FallingState;
 use crate::game_data::*;
 use crate::state_machine::*;
+use crate::tetramino::*;
 use crate::GameResources;
 use piston_window::*;
 use std::error;
@@ -10,49 +10,27 @@ pub struct PlayState {
     logic: StateMachine,
 }
 
-pub enum Rotation {
-    Left = -1,
-    Right = 1,
-}
-
-pub fn rotate(figure: &mut FigureData, direction: Rotation) {
-    if let Some(index) = figure.rotation_center_index {
-        let _rotation_center = figure.sequence[index];
-        let rotation_quotient = direction as i32;
-        for element in &mut figure.sequence {
-            // let diff = (rotation_center.1 - element.1, rotation_center.0 - element.0);
-            // *element = (rotation_center.0 + diff.0, rotation_center.0 + diff.0);
-            // let new = (- rotation_quotient*rotation_center.1,  rotation_quotient*rotation_center.0);
-            let new = (
-                -rotation_quotient * element.1,
-                rotation_quotient * element.0,
-            );
-            *element = new;
-        }
-    }
-}
-
 pub fn check_for_collision(
-    position: &(i32, i32),
-    sequence: &Vec<(i32, i32)>,
-    game_field: &GameData,
+    position: &Point,
+    sequence: &TetrominoRotation,
+    game_field: &[PlayBlock; WIDTH * HEIGHT],
 ) -> bool {
-    for element in sequence {
-        let new_position = (position.0 + element.0, position.1 + element.1);
-        let index = new_position.0 + (WIDTH as i32) * new_position.1;
-        if new_position.1 < 0 {
+    for element in sequence.into_iter() {
+        let new_position = position.add(&element);
+        let index = new_position.x + (WIDTH as i32) * new_position.y;
+        if new_position.y < 0 {
             continue;
         }
 
-        if new_position.0 < 0 || new_position.0 >= WIDTH as i32 {
+        if new_position.x < 0 || new_position.x >= WIDTH as i32 {
             return true;
         }
 
-        if new_position.1 >= HEIGHT as i32 {
+        if new_position.y >= HEIGHT as i32 {
             return true;
         }
 
-        match game_field.play_table[index as usize] {
+        match game_field[index as usize] {
             PlayBlock::E => {}
 
             _ => {
@@ -136,14 +114,13 @@ fn draw_preview(
     data: &GameData,
 ) {
     let full_block = &resources.cube_block;
-    let figure = data.preview_figure();
-
-    let offset = &figure.offset;
-    let figure = &figure.figure;
-    let sequence = &figure.sequence;
-    sequence.iter().for_each(|position: &(i32, i32)| {
-        let x = PREVIEW_DEFAULT_POSITION_X + (position.0 * BLOCK_SIZE as i32) as f64 + offset.0;
-        let y = PREVIEW_DEFAULT_POSITION_Y + (position.1 * BLOCK_SIZE as i32) as f64 + offset.1;
+    let sequence = data.tetramino_preview_sequence();
+    let offset = data.tetramino_preview_offset();
+    sequence.iter().for_each(|position: &Point| {
+        let x =
+            PREVIEW_DEFAULT_POSITION_X + (position.x * BLOCK_SIZE as i32) as f64 + offset.x as f64;
+        let y =
+            PREVIEW_DEFAULT_POSITION_Y + (position.y * BLOCK_SIZE as i32) as f64 + offset.y as f64;
         image(full_block, c.transform.trans(x as f64, y as f64), g);
     });
 }
@@ -156,14 +133,16 @@ fn draw_current(
     resources: &mut GameResources,
     data: &GameData,
 ) {
+    let current = &data.current_figure;
+    let type_index = current.get_type();
+    let rotation_index = current.get_rotation();
+    let position = current.get_position();
+    let rotation = &data.tetraminoes_data[type_index].rotations[rotation_index];
     let full_block = &resources.cube_block;
-    let figure = &data.current_figure;
 
-    let offset = &figure.position;
-    let sequence = &figure.sequence;
-    sequence.iter().for_each(|position: &(i32, i32)| {
-        let x = (position.0 * BLOCK_SIZE as i32) as f64 + (offset.0 * BLOCK_SIZE as i32) as f64;
-        let y = (position.1 * BLOCK_SIZE as i32) as f64 + (offset.1 * BLOCK_SIZE as i32) as f64;
+    rotation.into_iter().for_each(|offset: Point| {
+        let x = (position.x * BLOCK_SIZE as i32) as f64 + (offset.x * BLOCK_SIZE as i32) as f64;
+        let y = (position.y * BLOCK_SIZE as i32) as f64 + (offset.y * BLOCK_SIZE as i32) as f64;
         image(full_block, c.transform.trans(x as f64, y as f64), g);
     });
 }

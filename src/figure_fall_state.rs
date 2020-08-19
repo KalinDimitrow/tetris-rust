@@ -1,8 +1,8 @@
 use crate::game_data::*;
 use crate::game_resources::*;
-use crate::paly_state::Rotation::{Left, Right};
 use crate::paly_state::*;
 use crate::state_machine::*;
+use crate::tetramino::*;
 use piston_window::*;
 use std::error;
 
@@ -37,55 +37,87 @@ impl FallingState {
         self.fall_time += dt;
         if self.fall_time >= TIME_INTERVAL {
             self.fall_time -= TIME_INTERVAL;
-            if check_for_collision(
-                &(
-                    data.current_figure.position.0,
-                    data.current_figure.position.1 + 1,
-                ),
-                &data.current_figure.sequence,
-                &data,
-            ) {
-                for element in &data.current_figure.sequence {
-                    let new_position = (
-                        data.current_figure.position.0 + element.0,
-                        data.current_figure.position.1 + element.1,
-                    );
-                    let index = new_position.0 as usize + (new_position.1 as usize) * WIDTH;
+            let current = &data.current_figure;
+            let mut new_position = current.get_position().clone();
+            new_position.y += 1;
+            let rotation =
+                &data.tetraminoes_data[current.get_type()].rotations[current.get_rotation()];
+            let game_field = &data.play_table;
+            if check_for_collision(&new_position, rotation, game_field) {
+                let position = current.get_position().add(data.tetramino_preview_offset());
+                for element in rotation.into_iter() {
+                    let element_position = position.add(&element);
+                    let index = element_position.x as usize + (element_position.y as usize) * WIDTH;
                     data.play_table[index] = PlayBlock::O;
                 }
-                data.current_figure = GameData::unsafe_convert(data.next_figure).figure.clone();
-                data.next_figure();
+                data.current_figure = Tetramino::new(data.next_figure);
+                data.next_figure = GameData::random_tetramino_index();
             } else {
-                data.current_figure.position.1 += 1;
+                let current = &mut data.current_figure;
+                current.set_position(new_position);
             }
         }
     }
 
     fn handle_rotation(&mut self, data: &mut GameData) {
+        let current = &data.current_figure;
+        let rotation_index = current.get_rotation();
+        let mut next_rotation_index = rotation_index;
+        let game_field = &data.play_table;
+
         if self.rotate_left {
             self.rotate_left = false;
-            rotate(&mut data.current_figure, Left);
+            next_rotation_index = current.peek_left_rotation();
+
+            // data.current_figure.rotate_left();
         }
 
         if self.rotate_right {
             self.rotate_right = false;
-            rotate(&mut data.current_figure, Right);
+            next_rotation_index = current.peek_right_rotation();
+            // data.current_figure.rotate_right();
         }
+
+        let rotation = &data.tetraminoes_data[current.get_type()].rotations[next_rotation_index];
+        let sequence = data.collision_table.collision_sequence(
+            rotation_index,
+            next_rotation_index,
+            current.get_type(),
+        );
+
+        let mut collision = true;
+        let mut free_position = Point { x: 0, y: 0 };
+        for point in sequence {
+            let new_position = current.get_position().add(point);
+            if !check_for_collision(&new_position, rotation, game_field) {
+                collision = false;
+                free_position = *point;
+                break;
+            }
+        }
+
+        if collision {
+            return;
+        }
+
+        let current = &mut data.current_figure;
+        current.move_it(&free_position);
+        current.set_rotation(next_rotation_index);
     }
 
     fn handle_horizontal_movement(&mut self, dt: f64, data: &mut GameData) {
         self.horizontal_time += dt;
         if self.horizontal_time >= CONTROL_TIME_INTERVAL {
             self.horizontal_time -= CONTROL_TIME_INTERVAL;
-            if !check_for_collision(
-                &(
-                    data.current_figure.position.0 + self.horizontal_movement,
-                    data.current_figure.position.1,
-                ),
-                &data.current_figure.sequence,
-                &data,
-            ) {
-                data.current_figure.position.0 += self.horizontal_movement;
+            let current = &data.current_figure;
+            let rotation =
+                &data.tetraminoes_data[current.get_type()].rotations[current.get_rotation()];
+            let mut new_position = current.get_position().clone();
+
+            new_position.x += self.horizontal_movement;
+            let game_field = &data.play_table;
+            if !check_for_collision(&new_position, rotation, game_field) {
+                data.current_figure.set_position(new_position);
             }
         }
     }

@@ -112,7 +112,6 @@ impl StateMachine {
         resources: &mut GameResources,
         data: &GameData,
     ) {
-        // let arguments = arguments;
         self.stack.iter_mut().for_each(|state| {
             state.background_render(c, g, arguments, device, resources, data);
         });
