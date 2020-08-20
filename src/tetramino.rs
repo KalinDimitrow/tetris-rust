@@ -1,9 +1,9 @@
-use crate::game_data::TETRAMINOS_COUNT;
 use std::iter::{IntoIterator, Iterator};
 use std::ops;
 
 const ROTATION_COUNT: usize = 4;
 const TETRAMINO_POINTS_COUNT: usize = 4;
+pub const TETRAMINOS_COUNT: usize = 7;
 
 #[derive(Copy, Clone)]
 pub enum TetrominoType {
@@ -16,6 +16,8 @@ pub enum TetrominoType {
     L = 6,
     E,
 }
+
+pub type TetraminoesData = [TetrominoData; TETRAMINOS_COUNT];
 
 #[derive(Copy, Clone)]
 pub struct Point {
@@ -425,4 +427,296 @@ mod tests {
             7
         );
     }
+}
+
+pub fn initialize_tetraminoes_data() -> TetraminoesData {
+    [
+        TetrominoData::new(
+            [
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: -1, y: 0 },
+                        Point { x: 0, y: 0 },
+                        Point { x: 1, y: 0 },
+                        Point { x: 2, y: 0 },
+                    ],
+                },
+                TetrominoRotation {
+                    offset: Point { x: 1, y: 0 },
+                    sequence: [
+                        Point { x: 0, y: -1 },
+                        Point { x: 0, y: 0 },
+                        Point { x: 0, y: 1 },
+                        Point { x: 0, y: 2 },
+                    ],
+                },
+                TetrominoRotation {
+                    offset: Point { x: 1, y: 1 },
+                    sequence: [
+                        Point { x: 1, y: 0 },
+                        Point { x: 0, y: 0 },
+                        Point { x: -1, y: 0 },
+                        Point { x: -2, y: 0 },
+                    ],
+                },
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 1 },
+                    sequence: [
+                        Point { x: 0, y: 1 },
+                        Point { x: 0, y: 0 },
+                        Point { x: 0, y: -1 },
+                        Point { x: 0, y: -2 },
+                    ],
+                },
+            ],
+            TetrominoType::I,
+        ),
+        TetrominoData::new(
+            [
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: 0, y: 0 },
+                        Point { x: 1, y: 0 },
+                        Point { x: 1, y: 1 },
+                        Point { x: 0, y: 1 },
+                    ],
+                },
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: 0, y: 0 },
+                        Point { x: 1, y: 0 },
+                        Point { x: 1, y: 1 },
+                        Point { x: 0, y: 1 },
+                    ],
+                },
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: 0, y: 0 },
+                        Point { x: 1, y: 0 },
+                        Point { x: 1, y: 1 },
+                        Point { x: 0, y: 1 },
+                    ],
+                },
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: 0, y: 0 },
+                        Point { x: 1, y: 0 },
+                        Point { x: 1, y: 1 },
+                        Point { x: 0, y: 1 },
+                    ],
+                },
+            ],
+            TetrominoType::O,
+        ),
+        TetrominoData::new(
+            [
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: -1, y: 0 },
+                        Point { x: 0, y: 0 },
+                        Point { x: 1, y: 0 },
+                        Point { x: 0, y: -1 },
+                    ],
+                },
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: 0, y: -1 },
+                        Point { x: 0, y: 0 },
+                        Point { x: 0, y: 1 },
+                        Point { x: 1, y: 0 },
+                    ],
+                },
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: 1, y: 0 },
+                        Point { x: 0, y: 0 },
+                        Point { x: -1, y: 0 },
+                        Point { x: 0, y: 1 },
+                    ],
+                },
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: 0, y: 1 },
+                        Point { x: 0, y: 0 },
+                        Point { x: 0, y: -1 },
+                        Point { x: -1, y: 0 },
+                    ],
+                },
+            ],
+            TetrominoType::T,
+        ),
+        TetrominoData::new(
+            [
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: -1, y: 0 },
+                        Point { x: 0, y: 0 },
+                        Point { x: 0, y: -1 },
+                        Point { x: 1, y: -1 },
+                    ],
+                },
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: 0, y: -1 },
+                        Point { x: 0, y: 0 },
+                        Point { x: 1, y: 0 },
+                        Point { x: 1, y: 1 },
+                    ],
+                },
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: 1, y: 0 },
+                        Point { x: 0, y: 0 },
+                        Point { x: 0, y: 1 },
+                        Point { x: -1, y: 1 },
+                    ],
+                },
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: 0, y: 1 },
+                        Point { x: 0, y: 0 },
+                        Point { x: -1, y: 0 },
+                        Point { x: -1, y: -1 },
+                    ],
+                },
+            ],
+            TetrominoType::S,
+        ),
+        TetrominoData::new(
+            [
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: -1, y: -1 },
+                        Point { x: 0, y: -1 },
+                        Point { x: 0, y: 0 },
+                        Point { x: 1, y: 0 },
+                    ],
+                },
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: 1, y: -1 },
+                        Point { x: 1, y: 0 },
+                        Point { x: 0, y: 0 },
+                        Point { x: 0, y: 1 },
+                    ],
+                },
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: 1, y: 1 },
+                        Point { x: 0, y: 1 },
+                        Point { x: 0, y: 0 },
+                        Point { x: -1, y: 0 },
+                    ],
+                },
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: -1, y: 1 },
+                        Point { x: -1, y: 0 },
+                        Point { x: 0, y: 0 },
+                        Point { x: 0, y: -1 },
+                    ],
+                },
+            ],
+            TetrominoType::Z,
+        ),
+        TetrominoData::new(
+            [
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: -1, y: -1 },
+                        Point { x: -1, y: 0 },
+                        Point { x: 0, y: 0 },
+                        Point { x: 1, y: 0 },
+                    ],
+                },
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: 1, y: -1 },
+                        Point { x: 0, y: -1 },
+                        Point { x: 0, y: 0 },
+                        Point { x: 0, y: 1 },
+                    ],
+                },
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: 1, y: 1 },
+                        Point { x: 1, y: 0 },
+                        Point { x: 0, y: 0 },
+                        Point { x: -1, y: 0 },
+                    ],
+                },
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: -1, y: 1 },
+                        Point { x: 0, y: 1 },
+                        Point { x: 0, y: 0 },
+                        Point { x: 0, y: -1 },
+                    ],
+                },
+            ],
+            TetrominoType::J,
+        ),
+        TetrominoData::new(
+            [
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: -1, y: 0 },
+                        Point { x: 0, y: 0 },
+                        Point { x: 1, y: 0 },
+                        Point { x: 1, y: -1 },
+                    ],
+                },
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: 0, y: -1 },
+                        Point { x: 0, y: 0 },
+                        Point { x: 0, y: 1 },
+                        Point { x: 1, y: 1 },
+                    ],
+                },
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: 1, y: 0 },
+                        Point { x: 0, y: 0 },
+                        Point { x: -1, y: 0 },
+                        Point { x: -1, y: 1 },
+                    ],
+                },
+                TetrominoRotation {
+                    offset: Point { x: 0, y: 0 },
+                    sequence: [
+                        Point { x: 0, y: 1 },
+                        Point { x: 0, y: 0 },
+                        Point { x: 0, y: -1 },
+                        Point { x: -1, y: -1 },
+                    ],
+                },
+            ],
+            TetrominoType::L,
+        ),
+    ]
 }

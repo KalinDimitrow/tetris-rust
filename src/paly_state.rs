@@ -6,6 +6,16 @@ use crate::GameResources;
 use piston_window::*;
 use std::error;
 
+const BLOCK_SIZE: usize = 64;
+const GAME_FIELD_WIDTH: usize = BLOCK_SIZE * crate::game_data::WIDTH;
+const SCORE_TEXT_SIZE: u32 = 32;
+const SCORE_POSITION_X: f64 = 780.0;
+const SCORE_POSITION_Y: f64 = 24.0;
+const SCORE_TEXT_POSITION_X: f64 = 650.0;
+const SCORE_TEXT_POSITION_Y: f64 = SCORE_TEXT_SIZE as f64;
+const PREVIEW_DEFAULT_POSITION_X: f64 = 780.0;
+const PREVIEW_DEFAULT_POSITION_Y: f64 = 240.0;
+
 pub struct PlayState {
     logic: StateMachine,
 }
@@ -13,7 +23,7 @@ pub struct PlayState {
 pub fn check_for_collision(
     position: &Point,
     sequence: &TetrominoRotation,
-    game_field: &[PlayBlock; WIDTH * HEIGHT],
+    game_field: &GameField,
 ) -> bool {
     for element in sequence.into_iter() {
         let new_position = position.add(&element);
@@ -31,7 +41,7 @@ pub fn check_for_collision(
         }
 
         match game_field[index as usize] {
-            PlayBlock::E => {}
+            TetrominoType::E => {}
 
             _ => {
                 return true;
@@ -54,12 +64,12 @@ fn draw_play_field(
     let full_block = &resources.cube_block;
     let blocks = &data.play_table;
     let mut position_index: usize = 0;
-    blocks.iter().for_each(|block: &PlayBlock| {
+    blocks.iter().for_each(|block: &TetrominoType| {
         let x = position_index % GAME_FIELD_WIDTH;
         let y = (position_index / GAME_FIELD_WIDTH) * BLOCK_SIZE;
         position_index += BLOCK_SIZE;
         match block {
-            PlayBlock::E => {
+            TetrominoType::E => {
                 image(empty_block, c.transform.trans(x as f64, y as f64), g);
             }
 

@@ -5,17 +5,6 @@ use piston_window::*;
 use std::error;
 use std::vec::Vec;
 
-pub const BLOCK_SIZE: usize = 64;
-pub const GAME_FIELD_WIDTH: usize = BLOCK_SIZE * crate::game_data::WIDTH;
-
-pub const SCORE_TEXT_SIZE: u32 = 32;
-pub const SCORE_POSITION_X: f64 = 780.0;
-pub const SCORE_POSITION_Y: f64 = 24.0;
-pub const SCORE_TEXT_POSITION_X: f64 = 650.0;
-pub const SCORE_TEXT_POSITION_Y: f64 = SCORE_TEXT_SIZE as f64;
-pub const PREVIEW_DEFAULT_POSITION_X: f64 = 780.0;
-pub const PREVIEW_DEFAULT_POSITION_Y: f64 = 240.0;
-
 pub enum StateTransition {
     Push(Box<dyn State>),
     Transition(Box<dyn State>),

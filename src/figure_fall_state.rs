@@ -48,7 +48,7 @@ impl FallingState {
                 for element in rotation.into_iter() {
                     let element_position = position.add(&element);
                     let index = element_position.x as usize + (element_position.y as usize) * WIDTH;
-                    data.play_table[index] = PlayBlock::O;
+                    data.play_table[index] = TetrominoType::O;
                 }
                 data.current_figure = Tetramino::new(data.next_figure);
                 data.next_figure = GameData::random_tetramino_index();
