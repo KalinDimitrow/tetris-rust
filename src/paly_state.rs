@@ -1,7 +1,7 @@
-use crate::figure_fall_state::FallingState;
 use crate::game_data::*;
 use crate::state_machine::*;
 use crate::tetramino::*;
+use crate::tetramino_fall_state::*;
 use crate::GameResources;
 use piston_window::*;
 use std::error;

@@ -16,6 +16,7 @@ pub struct GameData {
     pub tetraminoes_data: TetraminoesData,
     pub play_table: GameField,
     pub collision_table: RotationCollisionTable,
+    pub highest_level: usize,
 }
 
 impl GameData {
@@ -29,6 +30,7 @@ impl GameData {
             tetraminoes_data: initialize_tetraminoes_data(),
             play_table,
             collision_table: RotationCollisionTable::new(),
+            highest_level: 0,
         })
     }
 
