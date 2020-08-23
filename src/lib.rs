@@ -1,3 +1,4 @@
+mod chunk;
 mod game_data;
 mod main_menu_state;
 mod paly_state;

@@ -50,6 +50,7 @@ impl FallingState {
                     let index = element_position.x as usize + (element_position.y as usize) * WIDTH;
                     data.play_table[index] = TetrominoType::O;
                 }
+                score(data);
                 data.current_figure = Tetramino::new(data.next_figure);
                 data.next_figure = GameData::random_tetramino_index();
             } else {

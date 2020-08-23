@@ -20,6 +20,55 @@ pub struct PlayState {
     logic: StateMachine,
 }
 
+fn find_filled_lines(play_table: &GameField) -> Vec<usize> {
+    let mut lines: Vec<usize> = Vec::new();
+    for row in 0..HEIGHT {
+        let mut line = true;
+        for column in 0..WIDTH {
+            match play_table[row * WIDTH + column] {
+                TetrominoType::E => {
+                    line = false;
+                    break;
+                }
+                _ => {}
+            }
+        }
+
+        if line {
+            lines.push(row);
+        }
+    }
+
+    lines
+}
+
+fn clear_play_table(play_table: &mut GameField, lines: Vec<usize>) {
+    for line in lines {
+        for element in 0..WIDTH {
+            play_table[line * WIDTH + element] = TetrominoType::E;
+        }
+    }
+}
+
+pub fn score(data: &mut GameData) {
+    let mut lines_count = 0;
+    loop {
+        let play_table = &data.play_table;
+        let lines = find_filled_lines(play_table);
+        let count = lines.len();
+        if count != 0 {
+            lines_count += count;
+            let play_table = &mut data.play_table;
+            clear_play_table(play_table, lines);
+            data.score += (1 << (count - 1)) * 100;
+        } else {
+            break;
+        }
+    }
+
+    data.score += lines_count as u32 * 100;
+}
+
 pub fn check_for_collision(
     position: &Point,
     sequence: &TetrominoRotation,
