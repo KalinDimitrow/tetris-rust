@@ -71,10 +71,10 @@ pub fn score(data: &mut GameData) {
 
 pub fn check_for_collision(
     position: &Point,
-    sequence: &TetrominoRotation,
+    sequence: impl IntoIterator<Item = Point>,
     game_field: &GameField,
 ) -> bool {
-    for element in sequence.into_iter() {
+    for element in sequence {
         let new_position = position.add(&element);
         let index = new_position.x + (WIDTH as i32) * new_position.y;
         if new_position.y < 0 {
