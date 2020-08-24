@@ -1,16 +1,22 @@
-image: "ruby:2.5"
+image: "node:lts-alpine"
 
 before_script:
-  - sudo apt-get update -qq && sudo apt-get install -y -qq sqlite3 libsqlite3-dev nodejs
-  - ruby -v
-  - which ruby
-  - gem install bundler --no-document
-  - bundle install --jobs $(nproc)  "${FLAGS[@]}"
+  - npm install
 
-rspec:
-  script:
-    - bundle exec rspec
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+    - .cache/
+    - public/
 
-rubocop:
+pages:
   script:
-    - bundle exec rubocop
+    - mkdir public/ || true
+    - npm run export -- --basepath $CI_PROJECT_NAME
+    - cp -a __sapper__/export/$CI_PROJECT_NAME/* public/
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
