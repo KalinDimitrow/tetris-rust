@@ -3,6 +3,7 @@ use crate::state_machine::*;
 use crate::tetramino::*;
 use crate::tetramino_fall_state::*;
 use crate::GameResources;
+use crate::chunk::*;
 use piston_window::*;
 use std::error;
 
@@ -18,6 +19,26 @@ const PREVIEW_DEFAULT_POSITION_Y: f64 = 240.0;
 
 pub struct PlayState {
     logic: StateMachine,
+}
+
+fn land_flying_chunks(play_table: &mut GameField, begin : usize) {
+    let mut chunks = find_chunks(play_table, HEIGHT - begin);
+
+    let mut iteration : i32 = 0;
+    while !chunks.is_empty() {
+
+        chunks.retain(|chunk : &Chunk| {
+            let position = Point{x : chunk.position.x, y : chunk.position.y + iteration + 1};
+            if check_for_collision(&position, chunk.into_iter(), play_table) {
+                let position = Point{x : chunk.position.x, y : chunk.position.y + iteration};
+                fill_field(&position, chunk.into_iter(), play_table);
+                return false;
+            }
+         true
+        });
+        iteration += 1;
+    }
+
 }
 
 fn find_filled_lines(play_table: &GameField) -> Vec<usize> {
@@ -59,14 +80,28 @@ pub fn score(data: &mut GameData) {
         if count != 0 {
             lines_count += count;
             let play_table = &mut data.play_table;
+            let chunk_begin : usize = lines.last().unwrap().clone();
             clear_play_table(play_table, lines);
+            land_flying_chunks(play_table, chunk_begin);
             data.score += (1 << (count - 1)) * 100;
         } else {
             break;
         }
     }
 
-    data.score += lines_count as u32 * 100;
+    data.score += (lines_count*(lines_count + 1)) as u32 * 50;
+}
+
+pub fn fill_field(
+    position: &Point,
+    sequence: impl IntoIterator<Item = Point>,
+    game_field: &mut GameField,
+) {
+    for element in sequence {
+        let element_position = position.add(&element);
+        let index = element_position.x as usize + (element_position.y as usize) * WIDTH;
+        game_field[index] = TetrominoType::O;
+    }
 }
 
 pub fn check_for_collision(

@@ -1,4 +1,3 @@
-use crate::chunk::*;
 use crate::game_data::*;
 use crate::game_resources::*;
 use crate::paly_state::*;
@@ -45,12 +44,12 @@ impl FallingState {
                 &data.tetraminoes_data[current.get_type()].rotations[current.get_rotation()];
             let game_field = &data.play_table;
             if check_for_collision(&new_position, rotation, game_field) {
-                let position = current.get_position().add(data.tetramino_preview_offset());
-                for element in rotation.into_iter() {
-                    let element_position = position.add(&element);
-                    let index = element_position.x as usize + (element_position.y as usize) * WIDTH;
-                    data.play_table[index] = TetrominoType::O;
+                if current.get_position().y == 0 {
+                    panic!("Game finished");
                 }
+                let position = current.get_position().add(data.tetramino_preview_offset());
+                let game_field = &mut data.play_table;
+                fill_field(&position, rotation.into_iter(), game_field);
                 score(data);
                 data.current_figure = Tetramino::new(data.next_figure);
                 data.next_figure = GameData::random_tetramino_index();
@@ -70,14 +69,11 @@ impl FallingState {
         if self.rotate_left {
             self.rotate_left = false;
             next_rotation_index = current.peek_left_rotation();
-
-            // data.current_figure.rotate_left();
         }
 
         if self.rotate_right {
             self.rotate_right = false;
             next_rotation_index = current.peek_right_rotation();
-            // data.current_figure.rotate_right();
         }
 
         let rotation = &data.tetraminoes_data[current.get_type()].rotations[next_rotation_index];
