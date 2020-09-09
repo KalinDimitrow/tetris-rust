@@ -99,8 +99,10 @@ pub fn fill_field(
 ) {
     for element in sequence {
         let element_position = position.add(&element);
-        let index = element_position.x as usize + (element_position.y as usize) * WIDTH;
-        game_field[index] = TetrominoType::O;
+        if element_position.y >= 0 {
+            let index = element_position.x as usize + (element_position.y as usize) * WIDTH;
+            game_field[index] = TetrominoType::O;
+        }
     }
 }
 

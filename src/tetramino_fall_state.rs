@@ -3,8 +3,10 @@ use crate::game_resources::*;
 use crate::paly_state::*;
 use crate::state_machine::*;
 use crate::tetramino::*;
+use crate::fast_fall_state::*;
 use piston_window::*;
 use std::error;
+use crate::state_machine::StateTransition::{Hold, Pop, Push};
 
 const TIME_INTERVAL: f64 = 0.33;
 const CONTROL_TIME_INTERVAL: f64 = 0.1;
@@ -18,6 +20,7 @@ pub struct FallingState {
     right_pressed: bool, // piston bug
     rotate_left: bool,
     rotate_right: bool,
+    down_pressed: bool,
 }
 
 impl FallingState {
@@ -30,10 +33,11 @@ impl FallingState {
             right_pressed: false,
             rotate_left: false,
             rotate_right: false,
+            down_pressed: false,
         }))
     }
 
-    fn handle_fall(&mut self, dt: f64, data: &mut GameData) {
+    fn handle_fall(&mut self, dt: f64, data: &mut GameData) -> StateTransition {
         self.fall_time += dt;
         if self.fall_time >= TIME_INTERVAL {
             self.fall_time -= TIME_INTERVAL;
@@ -45,8 +49,9 @@ impl FallingState {
             let game_field = &data.play_table;
             if check_for_collision(&new_position, rotation, game_field) {
                 if current.get_position().y == 0 {
-                    panic!("Game finished");
+                    return Pop;
                 }
+
                 let position = current.get_position().add(data.tetramino_preview_offset());
                 let game_field = &mut data.play_table;
                 fill_field(&position, rotation.into_iter(), game_field);
@@ -58,6 +63,8 @@ impl FallingState {
                 current.set_position(new_position);
             }
         }
+
+        Hold
     }
 
     fn handle_rotation(&mut self, data: &mut GameData) {
@@ -128,7 +135,19 @@ impl State for FallingState {
         update_args: &UpdateArgs,
         _event: Event,
     ) -> StateTransition {
-        self.handle_fall(update_args.dt, data);
+        if self.down_pressed {
+            self.down_pressed = false;
+            return StateTransition::Push(FastFallingState::new().unwrap());
+        }
+
+        if let Pop = self.handle_fall(update_args.dt, data) {
+            // temp
+            data.play_table = [TetrominoType::E; WIDTH * HEIGHT];
+            data.score = 0;
+            data.current_figure = Tetramino::new(GameData::random_tetramino_index());
+            return Pop;
+        }
+
         self.handle_horizontal_movement(update_args.dt, data);
         self.handle_rotation(data);
         StateTransition::Hold
@@ -172,7 +191,11 @@ impl State for FallingState {
                         }
                     }
 
-                    Key::Down => {}
+                    Key::Down => {
+                        if buttons.state == ButtonState::Press {
+                            self.down_pressed = true;
+                        }
+                    }
                     _ => {}
                 },
                 _ => {}

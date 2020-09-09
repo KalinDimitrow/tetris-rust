@@ -32,7 +32,7 @@ impl State for MainMenu {
             self.interact = false;
             match self.selection {
                 0 => {
-                    return StateTransition::Transition(PlayState::new().unwrap());
+                    return StateTransition::Push(PlayState::new().unwrap());
                 }
 
                 1 => {
