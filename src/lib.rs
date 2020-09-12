@@ -11,6 +11,7 @@ pub use crate::tetris::Tetris;
 mod game_resources;
 mod fast_fall_state;
 mod score_screen_state;
+mod pause_state;
 
 pub use crate::game_resources::GameResources;
 extern crate rand;

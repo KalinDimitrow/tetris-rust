@@ -4,6 +4,7 @@ use crate::tetramino::*;
 use crate::tetramino_fall_state::*;
 use crate::GameResources;
 use crate::chunk::*;
+use crate::pause_state::*;
 use piston_window::*;
 use std::error;
 
@@ -19,6 +20,7 @@ const PREVIEW_DEFAULT_POSITION_Y: f64 = 240.0;
 
 pub struct PlayState {
     logic: StateMachine,
+    pause_event : bool,
 }
 
 fn land_flying_chunks(play_table: &mut GameField, begin : usize) {
@@ -247,6 +249,7 @@ impl PlayState {
     pub fn new() -> Result<Box<dyn State>, Box<dyn error::Error>> {
         Ok(Box::new(PlayState {
             logic: StateMachine::new(FallingState::new()?)?,
+            pause_event : false,
         }))
     }
 }
@@ -258,7 +261,10 @@ impl State for PlayState {
         update_args: &UpdateArgs,
         event: Event,
     ) -> StateTransition {
-        if self.logic.update(data, update_args, event) {
+        if self.pause_event {
+            self.pause_event = false;
+            StateTransition::Push(Pause::new().unwrap())
+        } else if self.logic.update(data, update_args, event) {
             StateTransition::Hold
         } else {
             StateTransition::Pop
@@ -266,6 +272,21 @@ impl State for PlayState {
     }
 
     fn handle_input(&mut self, input: Input, time: Option<TimeStamp>, data: &mut GameData) {
+        match input {
+            Input::Button(buttons) => match buttons.button {
+                Button::Keyboard(key) => match key {
+                    Key::Escape => {
+                        if buttons.state == ButtonState::Press {
+                            self.pause_event = true;
+                        }
+                    }
+                    _ => {}
+                },
+                _ => {}
+            },
+            _ => {}
+        }
+
         self.logic.handle_input(input, time, data);
     }
 
