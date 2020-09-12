@@ -4,9 +4,10 @@ use crate::paly_state::*;
 use crate::state_machine::*;
 use crate::tetramino::*;
 use crate::fast_fall_state::*;
+use crate::score_screen_state::*;
 use piston_window::*;
 use std::error;
-use crate::state_machine::StateTransition::{Hold, Pop, Push};
+use crate::state_machine::StateTransition::{Hold, Pop, Push, Transition};
 
 const TIME_INTERVAL: f64 = 0.33;
 const CONTROL_TIME_INTERVAL: f64 = 0.1;
@@ -49,7 +50,7 @@ impl FallingState {
             let game_field = &data.play_table;
             if check_for_collision(&new_position, rotation, game_field) {
                 if current.get_position().y == 0 {
-                    return Pop;
+                    return Transition(ScoreScreen::new(data.score).unwrap());
                 }
 
                 let position = current.get_position().add(data.tetramino_preview_offset());
@@ -140,12 +141,8 @@ impl State for FallingState {
             return StateTransition::Push(FastFallingState::new().unwrap());
         }
 
-        if let Pop = self.handle_fall(update_args.dt, data) {
-            // temp
-            data.play_table = [TetrominoType::E; WIDTH * HEIGHT];
-            data.score = 0;
-            data.current_figure = Tetramino::new(GameData::random_tetramino_index());
-            return Pop;
+        if let Transition(t) = self.handle_fall(update_args.dt, data) {
+            return Transition(t);
         }
 
         self.handle_horizontal_movement(update_args.dt, data);
@@ -226,7 +223,11 @@ impl State for FallingState {
     ) {
     }
 
-    fn enter(&mut self, _state_machine: &mut StateMachine) {}
+    fn enter(&mut self, _state_machine: &mut StateMachine, _data: &mut GameData) {}
 
-    fn exit(&mut self, _state_machine: &mut StateMachine) {}
+    fn exit(&mut self, _state_machine: &mut StateMachine, data: &mut GameData) {
+        data.play_table = [TetrominoType::E; WIDTH * HEIGHT];
+        data.score = 0;
+        data.current_figure = Tetramino::new(GameData::random_tetramino_index());
+    }
 }

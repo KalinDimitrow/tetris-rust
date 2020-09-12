@@ -19,7 +19,9 @@ pub trait State {
         update_args: &UpdateArgs,
         event: Event,
     ) -> StateTransition;
+
     fn handle_input(&mut self, input: Input, time: Option<TimeStamp>, _data: &mut GameData);
+
     fn background_render(
         &mut self,
         _c: Context,
@@ -28,8 +30,8 @@ pub trait State {
         _device: &mut gfx_device_gl::Device,
         _resources: &mut GameResources,
         _data: &GameData,
-    ) {
-    }
+    ) {}
+
     fn render(
         &mut self,
         _c: Context,
@@ -38,10 +40,10 @@ pub trait State {
         _device: &mut gfx_device_gl::Device,
         _resources: &mut GameResources,
         _data: &GameData,
-    ) {
-    }
-    fn enter(&mut self, _state_machine: &mut StateMachine) {}
-    fn exit(&mut self, _state_machine: &mut StateMachine) {}
+    ) {}
+
+    fn enter(&mut self, _state_machine: &mut StateMachine, _data: &mut GameData) {}
+    fn exit(&mut self, _state_machine: &mut StateMachine, _data: &mut GameData) {}
 }
 
 pub struct StateMachine {
@@ -63,20 +65,20 @@ impl StateMachine {
 
         match transition {
             StateTransition::Push(mut pushed_state) => {
-                pushed_state.enter(self);
+                pushed_state.enter(self, data);
                 self.stack.push(pushed_state);
             }
 
             StateTransition::Transition(mut transition) => {
                 let mut top = self.stack.pop().unwrap();
-                top.exit(self);
-                transition.enter(self);
+                top.exit(self, data);
+                transition.enter(self, data);
                 self.stack.push(transition);
             }
 
             StateTransition::Pop => {
                 if let Some(mut top) = self.stack.pop() {
-                    top.exit(self);
+                    top.exit(self, data);
                 }
             }
 

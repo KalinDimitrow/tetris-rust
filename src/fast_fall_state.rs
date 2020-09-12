@@ -76,8 +76,8 @@ impl State for FastFallingState {
     ) {
     }
 
-    fn enter(&mut self, _state_machine: &mut StateMachine) {}
+    fn enter(&mut self, _state_machine: &mut StateMachine, _data: &mut GameData) {}
 
-    fn exit(&mut self, _state_machine: &mut StateMachine) {}
+    fn exit(&mut self, _state_machine: &mut StateMachine, _data: &mut GameData) {}
 }
 

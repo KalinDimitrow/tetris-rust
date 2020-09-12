@@ -41,7 +41,9 @@ impl Tetris {
         while let Some(event) = self.window.next() {
             match event {
                 Event::Loop(_loop) => {
-                    self.loop_handler(_loop, event);
+                    if self.loop_handler(_loop, event) {
+                        return;
+                    }
                 }
 
                 Event::Input(args, time) => {
@@ -57,10 +59,12 @@ impl Tetris {
         }
     }
 
-    fn loop_handler(&mut self, loop_arg: Loop, event: Event) {
+    fn loop_handler(&mut self, loop_arg: Loop, event: Event) -> bool {
         match loop_arg {
             Loop::Update(update_args) => {
-                self.update(update_args, event.clone());
+                if !self.update(update_args, event.clone()) {
+                    return true;
+                }
             }
 
             Loop::Render(render_args) => {
@@ -69,10 +73,12 @@ impl Tetris {
 
             _ => {}
         }
+
+        false
     }
 
-    fn update(&mut self, update: UpdateArgs, event: Event) {
-        self.game_logic.update(&mut self.game_data, &update, event);
+    fn update(&mut self, update: UpdateArgs, event: Event) -> bool {
+        self.game_logic.update(&mut self.game_data, &update, event)
     }
 
     fn render(&mut self, _arguments: RenderArgs, event: Event) {
