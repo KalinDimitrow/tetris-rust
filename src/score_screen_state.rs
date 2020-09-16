@@ -5,9 +5,6 @@ use crate::GameResources;
 use piston_window::*;
 use std::error;
 
-const SCORE_POSITION_X : f32 = 0.0;
-const SCORE_POSITION_Y : f32 = 0.0;
-
 pub struct ScoreScreen {
     interact: bool,
     score : u32,

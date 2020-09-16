@@ -17,6 +17,7 @@ pub struct GameData {
     pub play_table: GameField,
     pub collision_table: RotationCollisionTable,
     pub highest_level: usize,
+    pub lines : usize,
 }
 
 impl GameData {
@@ -31,6 +32,7 @@ impl GameData {
             play_table,
             collision_table: RotationCollisionTable::new(),
             highest_level: 0,
+            lines : 0,
         })
     }
 

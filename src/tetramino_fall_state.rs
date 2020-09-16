@@ -5,9 +5,10 @@ use crate::state_machine::*;
 use crate::tetramino::*;
 use crate::fast_fall_state::*;
 use crate::score_screen_state::*;
+use crate::line_clearing_state::*;
 use piston_window::*;
 use std::error;
-use crate::state_machine::StateTransition::{Hold, Pop, Push, Transition};
+use crate::state_machine::StateTransition::{Hold, Transition, Push};
 
 const TIME_INTERVAL: f64 = 0.33;
 const CONTROL_TIME_INTERVAL: f64 = 0.1;
@@ -56,9 +57,12 @@ impl FallingState {
                 let position = current.get_position().add(data.tetramino_preview_offset());
                 let game_field = &mut data.play_table;
                 fill_field(&position, rotation.into_iter(), game_field);
-                score(data);
-                data.current_figure = Tetramino::new(data.next_figure);
-                data.next_figure = GameData::random_tetramino_index();
+                // line clearing state
+                // score(data);
+                // data.current_figure = Tetramino::new(data.next_figure);
+                // data.next_figure = GameData::random_tetramino_index();
+                // line clearing state
+                return Push(LineClearing::new().unwrap());
             } else {
                 let current = &mut data.current_figure;
                 current.set_position(new_position);
@@ -141,8 +145,12 @@ impl State for FallingState {
             return StateTransition::Push(FastFallingState::new().unwrap());
         }
 
-        if let Transition(t) = self.handle_fall(update_args.dt, data) {
-            return Transition(t);
+        let state = self.handle_fall(update_args.dt, data);
+        match state {
+            StateTransition::Hold => {}
+            _=> {
+              return state;
+            }
         }
 
         self.handle_horizontal_movement(update_args.dt, data);
@@ -214,13 +222,14 @@ impl State for FallingState {
 
     fn render(
         &mut self,
-        _c: Context,
-        _g: &mut G2d,
-        _arguments: &RenderArgs,
-        _device: &mut gfx_device_gl::Device,
-        _resources: &mut GameResources,
-        _data: &GameData,
+        c: Context,
+        g: &mut G2d,
+        arguments: &RenderArgs,
+        device: &mut gfx_device_gl::Device,
+        resources: &mut GameResources,
+        data: &GameData,
     ) {
+        draw_current(&c, g, arguments, device, resources, data);
     }
 
     fn enter(&mut self, _state_machine: &mut StateMachine, _data: &mut GameData) {}

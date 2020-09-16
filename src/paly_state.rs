@@ -8,8 +8,8 @@ use crate::pause_state::*;
 use piston_window::*;
 use std::error;
 
-const BLOCK_SIZE: usize = 64;
-const GAME_FIELD_WIDTH: usize = BLOCK_SIZE * crate::game_data::WIDTH;
+pub const BLOCK_SIZE: usize = 64;
+pub const GAME_FIELD_WIDTH: usize = BLOCK_SIZE * crate::game_data::WIDTH;
 const SCORE_TEXT_SIZE: u32 = 32;
 const SCORE_POSITION_X: f64 = 780.0;
 const SCORE_POSITION_Y: f64 = 24.0;
@@ -23,7 +23,7 @@ pub struct PlayState {
     pause_event : bool,
 }
 
-fn land_flying_chunks(play_table: &mut GameField, begin : usize) {
+pub fn land_flying_chunks(play_table: &mut GameField, begin : usize) {
     let mut chunks = find_chunks(play_table, HEIGHT - begin);
 
     let mut iteration : i32 = 0;
@@ -43,7 +43,7 @@ fn land_flying_chunks(play_table: &mut GameField, begin : usize) {
 
 }
 
-fn find_filled_lines(play_table: &GameField) -> Vec<usize> {
+pub fn find_filled_lines(play_table: &GameField) -> Vec<usize> {
     let mut lines: Vec<usize> = Vec::new();
     for row in 0..HEIGHT {
         let mut line = true;
@@ -65,7 +65,7 @@ fn find_filled_lines(play_table: &GameField) -> Vec<usize> {
     lines
 }
 
-fn clear_play_table(play_table: &mut GameField, lines: Vec<usize>) {
+pub fn clear_play_table(play_table: &mut GameField, lines: Vec<usize>) {
     for line in lines {
         for element in 0..WIDTH {
             play_table[line * WIDTH + element] = TetrominoType::E;
@@ -73,6 +73,7 @@ fn clear_play_table(play_table: &mut GameField, lines: Vec<usize>) {
     }
 }
 
+#[allow(dead_code)]
 pub fn score(data: &mut GameData) {
     let mut lines_count = 0;
     loop {
@@ -223,7 +224,7 @@ fn draw_preview(
     });
 }
 
-fn draw_current(
+pub fn draw_current(
     c: &Context,
     g: &mut G2d,
     _arguments: &RenderArgs,
@@ -305,7 +306,7 @@ impl State for PlayState {
         draw_play_field(&c, g, arguments, device, resources, data);
         draw_score(&c, g, arguments, device, resources, data);
         draw_preview(&c, g, arguments, device, resources, data);
-        draw_current(&c, g, arguments, device, resources, data);
+        // draw_current(&c, g, arguments, device, resources, data);
         self.logic.render(c, g, arguments, device, resources, data);
     }
 }

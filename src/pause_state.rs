@@ -1,11 +1,8 @@
 use crate::game_data::*;
-use crate::paly_state::PlayState;
 use crate::state_machine::*;
 use crate::GameResources;
 use piston_window::*;
 use std::error;
-
-const ELEMENTS_COUNT: i32 = 2;
 
 pub struct Pause {
     interact: bool,
@@ -56,10 +53,10 @@ impl State for Pause {
         &mut self,
         c: Context,
         g: &mut G2d,
-        arguments: &RenderArgs,
+        _arguments: &RenderArgs,
         device: &mut gfx_device_gl::Device,
         resources: &mut GameResources,
-        data: &GameData,
+        _data: &GameData,
     ) {
         let texture = &resources.background;
         let font = &mut resources.font;

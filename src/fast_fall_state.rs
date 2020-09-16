@@ -2,13 +2,11 @@ use crate::game_data::*;
 use crate::game_resources::*;
 use crate::paly_state::*;
 use crate::state_machine::*;
-use crate::tetramino::*;
 use piston_window::*;
 use std::error;
 use crate::state_machine::StateTransition::{Pop, Hold};
 
 const TIME_INTERVAL: f64 = 0.03;
-const MOVEMENT_SPEED: i32 = 1;
 
 pub struct FastFallingState {
     fall_time: f64,
@@ -67,13 +65,14 @@ impl State for FastFallingState {
 
     fn render(
         &mut self,
-        _c: Context,
-        _g: &mut G2d,
-        _arguments: &RenderArgs,
-        _device: &mut gfx_device_gl::Device,
-        _resources: &mut GameResources,
-        _data: &GameData,
+        c: Context,
+        g: &mut G2d,
+        arguments: &RenderArgs,
+        device: &mut gfx_device_gl::Device,
+        resources: &mut GameResources,
+        data: &GameData,
     ) {
+        draw_current(&c, g, arguments, device, resources, data);
     }
 
     fn enter(&mut self, _state_machine: &mut StateMachine, _data: &mut GameData) {}
