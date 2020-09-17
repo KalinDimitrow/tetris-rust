@@ -40,9 +40,12 @@ impl State for LineClearing {
         _event: Event,
     ) -> StateTransition {
         if self.line_count == 0 {
-            let overall_lines = data.lines;
-            data.score += (((overall_lines + 1) * overall_lines) * 50 )as u32;
+            let overall_lines = data.lines as u32;
+            let score_multiplier = data.score_multiplier();
+            data.add_score((((overall_lines + 1) * overall_lines) * score_multiplier ) as u32);
             data.lines = 0;
+            data.current_figure = Tetramino::new(data.next_figure);
+            data.next_figure = GameData::random_tetramino_index();
             return StateTransition::Pop;
         }
 
@@ -99,14 +102,13 @@ impl State for LineClearing {
 
     fn exit(&mut self, _state_machine: &mut StateMachine, data: &mut GameData) {
         let lines_count = self.line_count;
+        let score_multiplier = data.score_multiplier();
         if lines_count != 0 {
             let play_table = &mut data.play_table;
             clear_play_table(play_table, self.lines.clone());
-            data.score += (1 << (self.line_count - 1)) * 100;
+            data.add_score((1 << (self.line_count - 1)) * score_multiplier);
         }
 
-        data.score += (lines_count*(lines_count + 1)) as u32 * 50;
-        data.current_figure = Tetramino::new(data.next_figure);
-        data.next_figure = GameData::random_tetramino_index();
+        data.add_score((lines_count*(lines_count + 1)) as u32 * score_multiplier);
     }
 }

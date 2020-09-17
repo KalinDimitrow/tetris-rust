@@ -21,8 +21,9 @@ impl FastFallingState {
 
     fn handle_fall(&mut self, dt: f64, data: &mut GameData) -> StateTransition {
         self.fall_time += dt;
-        if self.fall_time >= TIME_INTERVAL {
-            self.fall_time -= TIME_INTERVAL;
+        let time_interval = TIME_INTERVAL / data.speed_multiplier();
+        if self.fall_time >= time_interval {
+            self.fall_time -= time_interval;
             let current = &data.current_figure;
             let mut new_position = current.get_position().clone();
             new_position.y += 1;

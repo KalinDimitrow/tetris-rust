@@ -18,11 +18,14 @@ pub struct FallingState {
     fall_time: f64,
     horizontal_time: f64,
     horizontal_movement: i32,
+    left_stroke : bool,
+    right_stroke : bool,
     left_pressed: bool,  // piston bug
     right_pressed: bool, // piston bug
     rotate_left: bool,
     rotate_right: bool,
     down_pressed: bool,
+
 }
 
 impl FallingState {
@@ -31,18 +34,22 @@ impl FallingState {
             fall_time: 0.0,
             horizontal_time: 0.0,
             horizontal_movement: 0,
+            left_stroke : false,
+            right_stroke : false,
             left_pressed: false,
             right_pressed: false,
             rotate_left: false,
             rotate_right: false,
             down_pressed: false,
+
         }))
     }
 
     fn handle_fall(&mut self, dt: f64, data: &mut GameData) -> StateTransition {
         self.fall_time += dt;
-        if self.fall_time >= TIME_INTERVAL {
-            self.fall_time -= TIME_INTERVAL;
+        let time_interval = TIME_INTERVAL / data.speed_multiplier();
+        if self.fall_time >= time_interval {
+            self.fall_time -= time_interval;
             let current = &data.current_figure;
             let mut new_position = current.get_position().clone();
             new_position.y += 1;
@@ -57,11 +64,6 @@ impl FallingState {
                 let position = current.get_position().add(data.tetramino_preview_offset());
                 let game_field = &mut data.play_table;
                 fill_field(&position, rotation.into_iter(), game_field);
-                // line clearing state
-                // score(data);
-                // data.current_figure = Tetramino::new(data.next_figure);
-                // data.next_figure = GameData::random_tetramino_index();
-                // line clearing state
                 return Push(LineClearing::new().unwrap());
             } else {
                 let current = &mut data.current_figure;
@@ -117,14 +119,28 @@ impl FallingState {
 
     fn handle_horizontal_movement(&mut self, dt: f64, data: &mut GameData) {
         self.horizontal_time += dt;
-        if self.horizontal_time >= CONTROL_TIME_INTERVAL {
-            self.horizontal_time -= CONTROL_TIME_INTERVAL;
+        let time_interval = CONTROL_TIME_INTERVAL / data.speed_multiplier();
+        if self.horizontal_time >= time_interval {
+            self.horizontal_time -= time_interval;
             let current = &data.current_figure;
             let rotation =
                 &data.tetraminoes_data[current.get_type()].rotations[current.get_rotation()];
             let mut new_position = current.get_position().clone();
 
-            new_position.x += self.horizontal_movement;
+            if self.horizontal_movement == 0 {
+                if self.left_stroke {
+                    new_position.x -= MOVEMENT_SPEED;
+                }
+
+                if self.right_stroke {
+                    new_position.x += MOVEMENT_SPEED;
+                }
+            } else {
+                new_position.x += self.horizontal_movement;
+            }
+
+            self.left_stroke = false;
+            self.right_stroke = false;
             let game_field = &data.play_table;
             if !check_for_collision(&new_position, rotation, game_field) {
                 data.current_figure.set_position(new_position);
@@ -166,6 +182,7 @@ impl State for FallingState {
                         if buttons.state == ButtonState::Press {
                             if !self.left_pressed {
                                 self.horizontal_movement -= MOVEMENT_SPEED;
+                                self.left_stroke = true;
                                 self.left_pressed = true;
                             }
                         } else {
@@ -178,6 +195,7 @@ impl State for FallingState {
                             if !self.right_pressed {
                                 self.horizontal_movement += MOVEMENT_SPEED;
                                 self.right_pressed = true;
+                                self.right_stroke = true;
                             }
                         } else {
                             self.horizontal_movement -= MOVEMENT_SPEED;
@@ -207,6 +225,7 @@ impl State for FallingState {
             },
             _ => {}
         }
+
     }
 
     fn background_render(

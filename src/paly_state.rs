@@ -1,7 +1,7 @@
 use crate::game_data::*;
 use crate::state_machine::*;
 use crate::tetramino::*;
-use crate::tetramino_fall_state::*;
+use crate::fall_state::*;
 use crate::GameResources;
 use crate::chunk::*;
 use crate::pause_state::*;
@@ -15,6 +15,10 @@ const SCORE_POSITION_X: f64 = 780.0;
 const SCORE_POSITION_Y: f64 = 24.0;
 const SCORE_TEXT_POSITION_X: f64 = 650.0;
 const SCORE_TEXT_POSITION_Y: f64 = SCORE_TEXT_SIZE as f64;
+const LEVEL_POSITION_X: f64 = 780.0;
+const LEVEL_POSITION_Y: f64 = 74.0;
+const LEVEL_TEXT_POSITION_X: f64 = 650.0;
+const LEVEL_TEXT_POSITION_Y: f64 = SCORE_TEXT_SIZE as f64 + 50.0;
 const PREVIEW_DEFAULT_POSITION_X: f64 = 780.0;
 const PREVIEW_DEFAULT_POSITION_Y: f64 = 240.0;
 
@@ -76,6 +80,7 @@ pub fn clear_play_table(play_table: &mut GameField, lines: Vec<usize>) {
 #[allow(dead_code)]
 pub fn score(data: &mut GameData) {
     let mut lines_count = 0;
+    let score_multiplier = data.score_multiplier();
     loop {
         let play_table = &data.play_table;
         let lines = find_filled_lines(play_table);
@@ -86,13 +91,13 @@ pub fn score(data: &mut GameData) {
             let chunk_begin : usize = lines.last().unwrap().clone();
             clear_play_table(play_table, lines);
             land_flying_chunks(play_table, chunk_begin);
-            data.score += (1 << (count - 1)) * 100;
+            data.add_score((1 << (count - 1)) * score_multiplier);
         } else {
             break;
         }
     }
 
-    data.score += (lines_count*(lines_count + 1)) as u32 * 50;
+    data.add_score((lines_count*(lines_count + 1)) as u32 * score_multiplier);
 }
 
 pub fn fill_field(
@@ -178,6 +183,7 @@ fn draw_score(
     data: &GameData,
 ) {
     let score = data.score;
+    let level = data.dificulty;
 
     text::Text::new_color([1.0, 1.0, 0.0, 1.0], 32)
         .draw(
@@ -197,6 +203,28 @@ fn draw_score(
             &c.draw_state,
             c.transform
                 .trans(SCORE_POSITION_X as f64, SCORE_POSITION_Y as f64),
+            g,
+        )
+        .unwrap();
+
+    text::Text::new_color([1.0, 1.0, 0.0, 1.0], 32)
+        .draw(
+            "Level : ",
+            &mut resources.font,
+            &c.draw_state,
+            c.transform
+                .trans(LEVEL_TEXT_POSITION_X as f64, LEVEL_TEXT_POSITION_Y as f64),
+            g,
+        )
+        .unwrap();
+
+    text::Text::new_color([1.0, 1.0, 0.0, 1.0], 16)
+        .draw(
+            &level.to_string(),
+            &mut resources.font,
+            &c.draw_state,
+            c.transform
+                .trans(LEVEL_POSITION_X as f64, LEVEL_POSITION_Y as f64),
             g,
         )
         .unwrap();
@@ -306,7 +334,6 @@ impl State for PlayState {
         draw_play_field(&c, g, arguments, device, resources, data);
         draw_score(&c, g, arguments, device, resources, data);
         draw_preview(&c, g, arguments, device, resources, data);
-        // draw_current(&c, g, arguments, device, resources, data);
         self.logic.render(c, g, arguments, device, resources, data);
     }
 }

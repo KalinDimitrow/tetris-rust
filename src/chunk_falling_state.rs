@@ -40,8 +40,9 @@ impl State for ChunkFall {
         }
 
         self.fall_time += update_args.dt;
-        if self.fall_time >= TIME_INTERVAL {
-            self.fall_time -= TIME_INTERVAL;
+        let time_interval = TIME_INTERVAL / data.speed_multiplier();
+        if self.fall_time >= time_interval {
+            self.fall_time -= time_interval;
 
             let play_table = &mut data.play_table;
             let iteration = self.iteration;

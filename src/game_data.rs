@@ -18,6 +18,7 @@ pub struct GameData {
     pub collision_table: RotationCollisionTable,
     pub highest_level: usize,
     pub lines : usize,
+    pub dificulty : u32,
 }
 
 impl GameData {
@@ -33,6 +34,7 @@ impl GameData {
             collision_table: RotationCollisionTable::new(),
             highest_level: 0,
             lines : 0,
+            dificulty : 0,
         })
     }
 
@@ -54,5 +56,21 @@ impl GameData {
         let mut rng = rand::thread_rng();
         let value: usize = rng.gen_range(0, TETRAMINOS_COUNT);
         value
+    }
+
+    pub fn score_multiplier(&self) -> u32 {
+        const TABLE : [u32; 3] = [1, 2, 5];
+        let index = (self.dificulty % 3) as usize;
+        let power = self.dificulty / 3;
+        TABLE[index]*(10 as u32).pow(power)*100
+    }
+
+    pub fn add_score(&mut self, score : u32) {
+        self.score += score;
+        self.dificulty = ((self.score as f64 / 500 as f64).ln()).trunc() as u32;
+    }
+
+    pub fn speed_multiplier(&self) -> f64 {
+        (1.2 as f64).powi(self.dificulty as i32)
     }
 }
