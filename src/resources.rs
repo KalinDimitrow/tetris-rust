@@ -7,15 +7,15 @@ const GAME_FONT : &str = "TetrisFont2.ttf";
 const PARENT_DEPTH : find_folder::ParentsDepth = 3;
 const KIDS_DEPTH : find_folder::KidsDepth = 3;
 
-pub struct GameResources {
+pub struct Resources {
     pub background : G2dTexture,
     pub empty_block : G2dTexture,
     pub cube_block : G2dTexture,
     pub font : Glyphs,
 }
 
-impl GameResources {
-    pub fn new(_path : &str,  window : &mut PistonWindow) -> Result<GameResources, Box<dyn error::Error>> {
+impl Resources {
+    pub fn new(_path : &str,  window : &mut PistonWindow) -> Result<Resources, Box<dyn error::Error>> {
 
         let assets = find_folder::Search::ParentsThenKids(PARENT_DEPTH, KIDS_DEPTH)
             .for_folder(ASSET_DIRECTORY)?;
@@ -46,7 +46,7 @@ impl GameResources {
         let ref font = assets.join(GAME_FONT);
         let font = window.load_font(font)?;
 
-        let result = GameResources {
+        let result = Resources {
             background : background,
             empty_block : empty_block,
             cube_block : cube_block,

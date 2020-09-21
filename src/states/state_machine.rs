@@ -1,5 +1,5 @@
 use crate::game_data::*;
-use crate::GameResources;
+use crate::Resources;
 use math::Matrix2d;
 use piston_window::*;
 use std::error;
@@ -28,7 +28,7 @@ pub trait State {
         _g: &mut G2d,
         _arguments: &RenderArgs,
         _device: &mut gfx_device_gl::Device,
-        _resources: &mut GameResources,
+        _resources: &mut Resources,
         _data: &GameData,
     ) {}
 
@@ -38,7 +38,7 @@ pub trait State {
         _g: &mut G2d,
         _arguments: &RenderArgs,
         _device: &mut gfx_device_gl::Device,
-        _resources: &mut GameResources,
+        _resources: &mut Resources,
         _data: &GameData,
     ) {}
 
@@ -106,7 +106,7 @@ impl StateMachine {
         g: &mut G2d,
         arguments: &RenderArgs,
         device: &mut gfx_device_gl::Device,
-        resources: &mut GameResources,
+        resources: &mut Resources,
         data: &GameData,
     ) {
         self.stack.iter_mut().for_each(|state| {

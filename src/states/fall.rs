@@ -1,13 +1,13 @@
-use crate::game_data::*;
-use crate::game_resources::*;
-use crate::paly_state::*;
-use crate::state_machine::*;
+use crate::states::state_machine::StateTransition::{Hold, Push, Pop};
+use crate::states::line_clearing::*;
+use crate::states::state_machine::*;
+use crate::states::fast_fall::*;
+use crate::states::paly::*;
 use crate::tetramino::*;
-use crate::fast_fall_state::*;
-use crate::line_clearing_state::*;
+use crate::resources::*;
+use crate::game_data::*;
 use piston_window::*;
 use std::error;
-use crate::state_machine::StateTransition::{Hold, Push, Pop};
 
 const TIME_INTERVAL: f64 = 0.33;
 const CONTROL_TIME_INTERVAL: f64 = 0.1;
@@ -201,19 +201,19 @@ impl State for FallingState {
                             self.right_pressed = false;
                         }
                     }
-                    Key::A => {
+                    Key::Up => {
                         if buttons.state == ButtonState::Press {
                             self.rotate_left = true;
                         }
                     }
 
-                    Key::D => {
+                    Key::Down => {
                         if buttons.state == ButtonState::Press {
                             self.rotate_right = true;
                         }
                     }
 
-                    Key::Down => {
+                    Key::Space => {
                         if buttons.state == ButtonState::Press {
                             self.down_pressed = true;
                         }
@@ -233,7 +233,7 @@ impl State for FallingState {
         _g: &mut G2d,
         _arguments: &RenderArgs,
         _device: &mut gfx_device_gl::Device,
-        _resources: &mut GameResources,
+        _resources: &mut Resources,
         _data: &GameData,
     ) {
     }
@@ -244,19 +244,14 @@ impl State for FallingState {
         g: &mut G2d,
         arguments: &RenderArgs,
         device: &mut gfx_device_gl::Device,
-        resources: &mut GameResources,
+        resources: &mut Resources,
         data: &GameData,
     ) {
         draw_current(&c, g, arguments, device, resources, data);
     }
 
     fn enter(&mut self, _data: &mut GameData) {}
-
-    fn exit(&mut self, data: &mut GameData) {
-        data.play_table = [TetrominoType::E; WIDTH * HEIGHT];
-        data.score = 0;
-        data.current_figure = Tetramino::new(GameData::random_tetramino_index());
-    }
+    fn exit(&mut self, data: &mut GameData) {}
 
     fn resume(&mut self, _data: &mut GameData) {
         self.horizontal_movement = 0;

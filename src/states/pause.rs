@@ -1,6 +1,6 @@
+use crate::states::state_machine::*;
 use crate::game_data::*;
-use crate::state_machine::*;
-use crate::GameResources;
+use crate::Resources;
 use piston_window::*;
 use std::error;
 
@@ -55,7 +55,7 @@ impl State for Pause {
         g: &mut G2d,
         _arguments: &RenderArgs,
         device: &mut gfx_device_gl::Device,
-        resources: &mut GameResources,
+        resources: &mut Resources,
         _data: &GameData,
     ) {
         let texture = &resources.background;

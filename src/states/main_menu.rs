@@ -1,7 +1,7 @@
+use crate::states::state_machine::*;
+use crate::states::paly::PlayState;
 use crate::game_data::*;
-use crate::paly_state::PlayState;
-use crate::state_machine::*;
-use crate::GameResources;
+use crate::Resources;
 use piston_window::*;
 use std::error;
 
@@ -84,7 +84,7 @@ impl State for MainMenu {
         _g: &mut G2d,
         _arguments: &RenderArgs,
         _device: &mut gfx_device_gl::Device,
-        _resources: &mut GameResources,
+        _resources: &mut Resources,
         _data: &GameData,
     ) {
         let texture = &_resources.background;

@@ -1,10 +1,10 @@
+use crate::states::state_machine::StateTransition::{Pop, Hold};
+use crate::states::state_machine::*;
+use crate::states::paly::*;
 use crate::game_data::*;
-use crate::game_resources::*;
-use crate::paly_state::*;
-use crate::state_machine::*;
+use crate::resources::*;
 use piston_window::*;
 use std::error;
-use crate::state_machine::StateTransition::{Pop, Hold};
 
 const TIME_INTERVAL: f64 = 0.03;
 
@@ -59,7 +59,7 @@ impl State for FastFallingState {
         _g: &mut G2d,
         _arguments: &RenderArgs,
         _device: &mut gfx_device_gl::Device,
-        _resources: &mut GameResources,
+        _resources: &mut Resources,
         _data: &GameData,
     ) {
     }
@@ -70,7 +70,7 @@ impl State for FastFallingState {
         g: &mut G2d,
         arguments: &RenderArgs,
         device: &mut gfx_device_gl::Device,
-        resources: &mut GameResources,
+        resources: &mut Resources,
         data: &GameData,
     ) {
         draw_current(&c, g, arguments, device, resources, data);

@@ -1,19 +1,13 @@
 mod chunk;
 mod game_data;
-mod main_menu_state;
-mod paly_state;
-mod state_machine;
 mod tetramino;
-mod fall_state;
 mod tetris;
 
 pub use crate::tetris::Tetris;
-mod game_resources;
-mod fast_fall_state;
-mod score_screen_state;
-mod pause_state;
-mod line_clearing_state;
-mod chunk_falling_state;
+mod resources;
 
-pub use crate::game_resources::GameResources;
+mod framework_abstraction;
+mod states;
+
+pub use crate::resources::Resources;
 extern crate rand;

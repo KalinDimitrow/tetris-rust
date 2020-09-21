@@ -1,11 +1,11 @@
+use crate::states::state_machine::*;
+use crate::states::score_screen::*;
+use crate::states::pause::*;
+use crate::states::fall::*;
 use crate::game_data::*;
-use crate::state_machine::*;
 use crate::tetramino::*;
-use crate::fall_state::*;
-use crate::GameResources;
+use crate::Resources;
 use crate::chunk::*;
-use crate::pause_state::*;
-use crate::score_screen_state::*;
 use piston_window::*;
 use std::error;
 
@@ -216,7 +216,7 @@ fn draw_play_field(
     g: &mut G2d,
     _arguments: &RenderArgs,
     _device: &mut gfx_device_gl::Device,
-    resources: &mut GameResources,
+    resources: &mut Resources,
     data: &GameData,
 ) {
     let empty_block = &resources.empty_block;
@@ -244,7 +244,7 @@ fn draw_score(
     g: &mut G2d,
     _arguments: &RenderArgs,
     device: &mut gfx_device_gl::Device,
-    resources: &mut GameResources,
+    resources: &mut Resources,
     data: &GameData,
 ) {
     let score = data.score;
@@ -302,7 +302,7 @@ fn draw_preview(
     g: &mut G2d,
     _arguments: &RenderArgs,
     _device: &mut gfx_device_gl::Device,
-    resources: &mut GameResources,
+    resources: &mut Resources,
     data: &GameData,
 ) {
     let full_block = &resources.cube_block;
@@ -322,7 +322,7 @@ pub fn draw_current(
     g: &mut G2d,
     _arguments: &RenderArgs,
     _device: &mut gfx_device_gl::Device,
-    resources: &mut GameResources,
+    resources: &mut Resources,
     data: &GameData,
 ) {
     let current = &data.current_figure;
@@ -361,7 +361,7 @@ impl State for PlayState {
         } else if self.logic.update(data, update_args, event) {
             StateTransition::Hold
         } else {
-            StateTransition::Transition(ScoreScreen::new(data.score).unwrap())
+            StateTransition::Transition(ScoreScreen::new(data.score, data.dificulty).unwrap())
         }
     }
 
@@ -390,7 +390,7 @@ impl State for PlayState {
         g: &mut G2d,
         arguments: &RenderArgs,
         device: &mut gfx_device_gl::Device,
-        resources: &mut GameResources,
+        resources: &mut Resources,
         data: &GameData,
     ) {
         clear([1.0; 4], g);
@@ -400,5 +400,12 @@ impl State for PlayState {
         draw_score(&c, g, arguments, device, resources, data);
         draw_preview(&c, g, arguments, device, resources, data);
         self.logic.render(c, g, arguments, device, resources, data);
+    }
+
+    fn enter(&mut self, data: &mut GameData) {
+        data.dificulty = 0;
+        data.score = 0;
+        data.play_table = [TetrominoType::E; WIDTH * HEIGHT];
+        data.current_figure = Tetramino::new(GameData::random_tetramino_index());
     }
 }

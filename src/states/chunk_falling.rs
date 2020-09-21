@@ -1,9 +1,9 @@
+use crate::states::line_clearing::*;
+use crate::states::state_machine::*;
+use crate::states::paly::*;
 use crate::game_data::*;
-use crate::paly_state::*;
-use crate::state_machine::*;
-use crate::GameResources;
 use crate::tetramino::*;
-use crate::line_clearing_state::*;
+use crate::Resources;
 use crate::chunk::*;
 use piston_window::*;
 use std::error;
@@ -70,7 +70,7 @@ impl State for ChunkFall {
         g: &mut G2d,
         _arguments: &RenderArgs,
         _device: &mut gfx_device_gl::Device,
-        resources: &mut GameResources,
+        resources: &mut Resources,
         _data: &GameData,
     ) {
         let full_block = &resources.cube_block;
