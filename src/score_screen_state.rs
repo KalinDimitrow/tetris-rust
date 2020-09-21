@@ -42,6 +42,10 @@ impl State for ScoreScreen {
                             Key::Return => {
                                 self.interact = true;
                             }
+
+                            Key::Escape => {
+                                self.interact = true;
+                            }
                             _ => {}
                         },
                         _ => {}

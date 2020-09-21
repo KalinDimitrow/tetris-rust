@@ -63,6 +63,11 @@ impl State for MainMenu {
                             Key::Return => {
                                 self.interact = true;
                             }
+
+                            Key::Escape => {
+                                self.selection = 1;
+                                self.interact = true;
+                            }
                             _ => {}
                         },
                         _ => {}

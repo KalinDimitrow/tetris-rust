@@ -76,8 +76,8 @@ impl State for FastFallingState {
         draw_current(&c, g, arguments, device, resources, data);
     }
 
-    fn enter(&mut self, _state_machine: &mut StateMachine, _data: &mut GameData) {}
+    fn enter(&mut self, _data: &mut GameData) {}
 
-    fn exit(&mut self, _state_machine: &mut StateMachine, _data: &mut GameData) {}
+    fn exit(&mut self, _data: &mut GameData) {}
 }
 

@@ -42,8 +42,10 @@ pub trait State {
         _data: &GameData,
     ) {}
 
-    fn enter(&mut self, _state_machine: &mut StateMachine, _data: &mut GameData) {}
-    fn exit(&mut self, _state_machine: &mut StateMachine, _data: &mut GameData) {}
+    fn enter(&mut self, _data: &mut GameData) {}
+    fn exit(&mut self, _data: &mut GameData) {}
+    fn pause(&mut self, _data: &mut GameData) {}
+    fn resume(&mut self, _data: &mut GameData) {}
 }
 
 pub struct StateMachine {
@@ -65,20 +67,24 @@ impl StateMachine {
 
         match transition {
             StateTransition::Push(mut pushed_state) => {
-                pushed_state.enter(self, data);
+                pushed_state.enter(data);
                 self.stack.push(pushed_state);
             }
 
             StateTransition::Transition(mut transition) => {
                 let mut top = self.stack.pop().unwrap();
-                top.exit(self, data);
-                transition.enter(self, data);
+                top.exit( data);
+                transition.enter(data);
                 self.stack.push(transition);
             }
 
             StateTransition::Pop => {
-                if let Some(mut top) = self.stack.pop() {
-                    top.exit(self, data);
+                let stack = &mut self.stack;
+                if let Some(mut top) = stack.pop() {
+                    top.exit(data);
+                }
+                if let Some(top) = stack.last_mut() {
+                    top.resume(data);
                 }
             }
 

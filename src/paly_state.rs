@@ -5,6 +5,7 @@ use crate::fall_state::*;
 use crate::GameResources;
 use crate::chunk::*;
 use crate::pause_state::*;
+use crate::score_screen_state::*;
 use piston_window::*;
 use std::error;
 
@@ -67,6 +68,70 @@ pub fn find_filled_lines(play_table: &GameField) -> Vec<usize> {
     }
 
     lines
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_find_filled_lines_1() {
+        const E: TetrominoType = TetrominoType::E;
+        let mut gamefield: GameField = [
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+        ];
+        let result = find_filled_lines(&mut gamefield);
+        assert_eq!(0, result.len());
+    }
+
+    #[test]
+    fn test_find_filled_lines_2() {
+        const E: TetrominoType = TetrominoType::E;
+        const I: TetrominoType = TetrominoType::I;
+        let mut gamefield: GameField = [
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            E, E, E, E, E, E, E, E, E, E,
+            I, I, I, I, I, I, I, I, I, I,
+            I, E, I, I, I, I, I, I, I, I,
+            I, I, I, I, I, I, I, I, I, I,
+            I, I, I, I, I, I, I, I, I, I,
+        ];
+        let result = find_filled_lines(&mut gamefield);
+        assert_eq!(3, result.len());
+    }
 }
 
 pub fn clear_play_table(play_table: &mut GameField, lines: Vec<usize>) {
@@ -296,7 +361,7 @@ impl State for PlayState {
         } else if self.logic.update(data, update_args, event) {
             StateTransition::Hold
         } else {
-            StateTransition::Pop
+            StateTransition::Transition(ScoreScreen::new(data.score).unwrap())
         }
     }
 

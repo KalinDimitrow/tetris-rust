@@ -88,7 +88,7 @@ impl State for LineClearing {
         });
     }
 
-    fn enter(&mut self, _state_machine: &mut StateMachine, data: &mut GameData) {
+    fn enter(&mut self, data: &mut GameData) {
         let play_table = &data.play_table;
         self.lines = find_filled_lines(play_table);
         data.lines += self.line_count;
@@ -100,7 +100,7 @@ impl State for LineClearing {
         }
     }
 
-    fn exit(&mut self, _state_machine: &mut StateMachine, data: &mut GameData) {
+    fn exit(&mut self, data: &mut GameData) {
         let lines_count = self.line_count;
         let score_multiplier = data.score_multiplier();
         if lines_count != 0 {

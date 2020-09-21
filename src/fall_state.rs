@@ -4,11 +4,10 @@ use crate::paly_state::*;
 use crate::state_machine::*;
 use crate::tetramino::*;
 use crate::fast_fall_state::*;
-use crate::score_screen_state::*;
 use crate::line_clearing_state::*;
 use piston_window::*;
 use std::error;
-use crate::state_machine::StateTransition::{Hold, Transition, Push};
+use crate::state_machine::StateTransition::{Hold, Push, Pop};
 
 const TIME_INTERVAL: f64 = 0.33;
 const CONTROL_TIME_INTERVAL: f64 = 0.1;
@@ -57,8 +56,8 @@ impl FallingState {
                 &data.tetraminoes_data[current.get_type()].rotations[current.get_rotation()];
             let game_field = &data.play_table;
             if check_for_collision(&new_position, rotation, game_field) {
-                if current.get_position().y == 0 {
-                    return Transition(ScoreScreen::new(data.score).unwrap());
+                if current.get_position().y <= 0 {
+                    return Pop;
                 }
 
                 let position = current.get_position().add(data.tetramino_preview_offset());
@@ -119,7 +118,7 @@ impl FallingState {
 
     fn handle_horizontal_movement(&mut self, dt: f64, data: &mut GameData) {
         self.horizontal_time += dt;
-        let time_interval = CONTROL_TIME_INTERVAL / data.speed_multiplier();
+        let time_interval = CONTROL_TIME_INTERVAL;// / data.speed_multiplier();
         if self.horizontal_time >= time_interval {
             self.horizontal_time -= time_interval;
             let current = &data.current_figure;
@@ -156,17 +155,17 @@ impl State for FallingState {
         update_args: &UpdateArgs,
         _event: Event,
     ) -> StateTransition {
-        if self.down_pressed {
-            self.down_pressed = false;
-            return StateTransition::Push(FastFallingState::new().unwrap());
-        }
-
         let state = self.handle_fall(update_args.dt, data);
         match state {
             StateTransition::Hold => {}
             _=> {
               return state;
             }
+        }
+
+        if self.down_pressed {
+            self.down_pressed = false;
+            return StateTransition::Push(FastFallingState::new().unwrap());
         }
 
         self.handle_horizontal_movement(update_args.dt, data);
@@ -186,7 +185,7 @@ impl State for FallingState {
                                 self.left_pressed = true;
                             }
                         } else {
-                            self.horizontal_movement += MOVEMENT_SPEED;
+                            self.horizontal_movement = 0;
                             self.left_pressed = false;
                         }
                     }
@@ -198,7 +197,7 @@ impl State for FallingState {
                                 self.right_stroke = true;
                             }
                         } else {
-                            self.horizontal_movement -= MOVEMENT_SPEED;
+                            self.horizontal_movement = 0;
                             self.right_pressed = false;
                         }
                     }
@@ -251,11 +250,17 @@ impl State for FallingState {
         draw_current(&c, g, arguments, device, resources, data);
     }
 
-    fn enter(&mut self, _state_machine: &mut StateMachine, _data: &mut GameData) {}
+    fn enter(&mut self, _data: &mut GameData) {}
 
-    fn exit(&mut self, _state_machine: &mut StateMachine, data: &mut GameData) {
+    fn exit(&mut self, data: &mut GameData) {
         data.play_table = [TetrominoType::E; WIDTH * HEIGHT];
         data.score = 0;
         data.current_figure = Tetramino::new(GameData::random_tetramino_index());
+    }
+
+    fn resume(&mut self, _data: &mut GameData) {
+        self.horizontal_movement = 0;
+        self.right_stroke = false;
+        self.left_stroke = false;
     }
 }

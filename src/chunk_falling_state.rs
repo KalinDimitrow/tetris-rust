@@ -86,7 +86,7 @@ impl State for ChunkFall {
         });
     }
 
-    fn enter(&mut self, _state_machine: &mut StateMachine, data: &mut GameData) {
+    fn enter(&mut self, data: &mut GameData) {
         let play_table = &mut data.play_table;
         self.chunks = find_chunks(play_table, HEIGHT - self.begin);
     }
