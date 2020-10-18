@@ -1,6 +1,6 @@
 use crate::states::chunk_falling::*;
 use crate::states::state_machine::*;
-use crate::states::paly::*;
+use crate::states::play::*;
 use crate::tetramino::*;
 use crate::game_data::*;
 use crate::Resources;

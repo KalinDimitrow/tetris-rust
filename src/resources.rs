@@ -1,6 +1,12 @@
 extern crate find_folder;
 use piston_window::*;
 use std::error;
+use crate::tetris::Abstraction;
+use crate::abstraction::piston_abstraction::PistonAbstraction;
+use crate::abstraction::abstraction_layer::{TextureHandle, AbstractionLayer};
+
+// type R1 = Abstraction::Ctx;
+type R1 = <crate::abstraction::piston_abstraction::PistonAbstraction as crate::abstraction::abstraction_layer::AbstractionLayer>::Ctx;
 
 const ASSET_DIRECTORY : &str = "assets";
 const GAME_FONT : &str = "TetrisFont2.ttf";
@@ -12,10 +18,11 @@ pub struct Resources {
     pub empty_block : G2dTexture,
     pub cube_block : G2dTexture,
     pub font : Glyphs,
+    pub texture : TextureHandle<R1>
 }
 
 impl Resources {
-    pub fn new(_path : &str,  window : &mut PistonWindow) -> Result<Resources, Box<dyn error::Error>> {
+    pub fn new(_path : &str,  window : &mut PistonWindow, resource_loader : &mut Abstraction) -> Result<Resources, Box<dyn error::Error>> {
 
         let assets = find_folder::Search::ParentsThenKids(PARENT_DEPTH, KIDS_DEPTH)
             .for_folder(ASSET_DIRECTORY)?;
@@ -50,7 +57,8 @@ impl Resources {
             background : background,
             empty_block : empty_block,
             cube_block : cube_block,
-            font : font
+            font : font,
+            texture : resource_loader.load_texture("background2.png")
         };
 
         Ok(result)

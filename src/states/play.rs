@@ -399,7 +399,7 @@ impl State for PlayState {
         draw_play_field(&c, g, arguments, device, resources, data);
         draw_score(&c, g, arguments, device, resources, data);
         draw_preview(&c, g, arguments, device, resources, data);
-        self.logic.render(c, g, arguments, device, resources, data);
+        // self.logic.render(c, g, arguments, device, resources, data);
     }
 
     fn enter(&mut self, data: &mut GameData) {

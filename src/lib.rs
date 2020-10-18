@@ -5,8 +5,7 @@ mod tetris;
 
 pub use crate::tetris::Tetris;
 mod resources;
-
-mod framework_abstraction;
+mod abstraction;
 mod states;
 
 pub use crate::resources::Resources;

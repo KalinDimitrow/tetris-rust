@@ -1,6 +1,6 @@
 use crate::states::line_clearing::*;
 use crate::states::state_machine::*;
-use crate::states::paly::*;
+use crate::states::play::*;
 use crate::game_data::*;
 use crate::tetramino::*;
 use crate::Resources;

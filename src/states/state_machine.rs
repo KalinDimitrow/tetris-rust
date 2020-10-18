@@ -4,6 +4,8 @@ use math::Matrix2d;
 use piston_window::*;
 use std::error;
 use std::vec::Vec;
+use crate::abstraction::piston_abstraction::*;
+use crate::abstraction::abstraction_layer::{RenderContext, Transform};
 
 pub enum StateTransition {
     Push(Box<dyn State>),
@@ -100,21 +102,37 @@ impl StateMachine {
         }
     }
 
+    // pub fn render(
+    //     &mut self,
+    //     c: Context,
+    //     g: &mut G2d,
+    //     arguments: &RenderArgs,
+    //     device: &mut gfx_device_gl::Device,
+    //     resources: &mut Resources,
+    //     data: &GameData,
+    // ) {
+    //     self.stack.iter_mut().for_each(|state| {
+    //         state.background_render(c, g, arguments, device, resources, data);
+    //     });
+    //     if let Some(top) = self.stack.last_mut() {
+    //         top.render(c, g, arguments, device, resources, data);
+    //     }
+    // }
+
     pub fn render(
-        &mut self,
-        c: Context,
-        g: &mut G2d,
-        arguments: &RenderArgs,
-        device: &mut gfx_device_gl::Device,
-        resources: &mut Resources,
-        data: &GameData,
+        &self,
+        ctx : &mut PistonRenderContext,
+        resources: &Resources
     ) {
-        self.stack.iter_mut().for_each(|state| {
-            state.background_render(c, g, arguments, device, resources, data);
-        });
-        if let Some(top) = self.stack.last_mut() {
-            top.render(c, g, arguments, device, resources, data);
-        }
+        let texture = &resources.texture;
+        let t =  Transform{x : 0.0, y : 0.0};
+        ctx.draw_image(texture, &t);
+        // self.stack.iter_mut().for_each(|state| {
+        //     state.background_render(c, g, arguments, device, resources, data);
+        // });
+        // if let Some(top) = self.stack.last_mut() {
+        //     top.render(c, g, arguments, device, resources, data);
+        // }
     }
 }
 

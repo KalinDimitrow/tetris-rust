@@ -1,5 +1,5 @@
 use crate::states::state_machine::*;
-use crate::states::paly::PlayState;
+use crate::states::play::PlayState;
 use crate::game_data::*;
 use crate::Resources;
 use piston_window::*;

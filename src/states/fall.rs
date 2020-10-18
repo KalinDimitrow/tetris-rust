@@ -2,7 +2,7 @@ use crate::states::state_machine::StateTransition::{Hold, Push, Pop};
 use crate::states::line_clearing::*;
 use crate::states::state_machine::*;
 use crate::states::fast_fall::*;
-use crate::states::paly::*;
+use crate::states::play::*;
 use crate::tetramino::*;
 use crate::resources::*;
 use crate::game_data::*;

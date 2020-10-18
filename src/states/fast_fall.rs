@@ -1,6 +1,6 @@
 use crate::states::state_machine::StateTransition::{Pop, Hold};
 use crate::states::state_machine::*;
-use crate::states::paly::*;
+use crate::states::play::*;
 use crate::game_data::*;
 use crate::resources::*;
 use piston_window::*;

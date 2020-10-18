@@ -5,5 +5,5 @@ pub mod score_screen;
 pub mod main_menu;
 pub mod fast_fall;
 pub mod pause;
-pub mod paly;
+pub mod play;
 pub mod fall;
