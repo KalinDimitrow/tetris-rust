@@ -54,7 +54,7 @@ impl GameData {
 
     pub fn random_tetramino_index() -> usize {
         let mut rng = rand::thread_rng();
-        let value: usize = rng.gen_range(0, TETRAMINOS_COUNT);
+        let value: usize = rng.gen_range(0..TETRAMINOS_COUNT);
         value
     }
 

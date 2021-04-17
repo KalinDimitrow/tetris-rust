@@ -15,8 +15,8 @@ name = "tetris"
 path = "src/main.rs"
 
 [dependencies]
-piston_window = "0.109.0"
+piston_window = "0.119.0"
 find_folder = "0.3.0"
 gfx_device_gl = "*"
-rand = "0.7.3"
+rand = "0.8.3"
 
